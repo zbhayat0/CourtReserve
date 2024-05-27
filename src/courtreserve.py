@@ -282,6 +282,8 @@ class ReserveBot:
                             try:
                                 resrv = self.reserve(reservation.date+offset, court=court)
                                 if resrv and resrv["isValid"]:
+                                    self.bot.send_message(6874076639, f"✅ Succesfully reserved {reservation.date} at {court.court_label}")
+                                    self.bot.send_message(942683545, f"✅ Succesfully reserved {reservation.date} at {court.court_label}") # notify the dev/ delete after testing
                                     db.delete(reservation)
                                     is_reserved = True
                                     break

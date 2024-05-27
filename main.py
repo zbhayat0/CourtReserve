@@ -8,12 +8,15 @@ from src.courtreserve import (TIME_ZONE, ReserveBot, get_available_days, Locatio
                               get_available_hours)
 from src.database import Reservation, db
 from src.logger import Logger
+from src.tele_handler import errorsWrapper
 import typing
 from threading import Thread
 
 
+
 bot = TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk")
 logger = Logger("bot")
+queue: dict = {}
 
 class Menu:
     @staticmethod
@@ -79,10 +82,8 @@ class Menu:
         return markup
 
 
-queue: dict = {}
-
-
 @bot.message_handler(commands=["reserve"])
+@errorsWrapper(logger)
 def reserve(message):
     bot.send_message(message.chat.id, "Please select an option", reply_markup=Menu.admin())
 
@@ -101,7 +102,6 @@ def back(call):
         bot.edit_message_text("Please select an option", call.message.chat.id, call.message.id, reply_markup=menu())
     except:
         bot.edit_message_reply_markup(call.message.chat.id, call.message.id, reply_markup=menu())
-
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "new_reservation")
