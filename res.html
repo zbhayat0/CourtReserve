@@ -1,0 +1,1727 @@
+
+
+<div class="modal-outer-container" id="main-reservation-container">
+    <div class="modal-outer-inner-container">
+        <div class="container">
+            <div class="modal-page-inner">
+                <form action="https://reservations.courtreserve.com//Online/ReservationsApi/CreateReservation/12207?uiCulture=en-US"
+                      data-ajax="true"
+                      data-ajax-begin="disableButtonsByClass('btn-submit')"
+                      data-ajax-method="POST"
+                      data-ajax-success="reservationFunctionSuccess(data,this)"
+                      id="createReservation-Form" method="post">
+
+                    <input name="__RequestVerificationToken" type="hidden" value="eyQvNxvhmhGdVnLv90FGc64G251K8Out-zalvoTkl_uT6rn6YTVHNOzhDiFMLb6Qn7vIxJ7Av5Nesbo4rSUEGQI0B1RkOauO3TqPOpJoEhkB0mg2u7XtWTdOXyoqGQ1pTuydRw2" />
+
+                    <input data-val="true" data-val-number="The field Id must be a number." id="Id" name="Id" type="hidden" value="12207" />
+                    <input data-val="true" data-val-number="The field Organization must be a number." data-val-required="The Organization field is required." id="OrgId" name="OrgId" type="hidden" value="12207" />
+                    <input data-val="true" data-val-number="The field Member must be a number." data-val-required="The Member field is required." id="MemberId" name="MemberId" type="hidden" value="5663355" />
+                    <input id="MemberIds" name="MemberIds" type="hidden" value="" />
+                    <input id="IsConsolidatedScheduler" name="IsConsolidatedScheduler" type="hidden" value="False" />
+                    
+                    <input data-val="true" data-val-number="The field HoldTimeForReservation must be a number." id="HoldTimeForReservation" name="HoldTimeForReservation" type="hidden" value="15" />
+                    <input id="RequirePaymentWhenBookingCourtsOnline" name="RequirePaymentWhenBookingCourtsOnline" type="hidden" value="False" />
+                    <input id="AllowMemberToPickOtherMembersToPlayWith" name="AllowMemberToPickOtherMembersToPlayWith" type="hidden" value="False" />
+                    <input id="ReservableEntityName" name="ReservableEntityName" type="hidden" value="Court" />
+                    <input id="IsAllowedToPickStartAndEndTime" name="IsAllowedToPickStartAndEndTime" type="hidden" value="False" />
+                    <input data-val="true" data-val-number="The field CustomSchedulerId must be a number." id="CustomSchedulerId" name="CustomSchedulerId" type="hidden" value="" />
+                    <input id="IsConsolidated" name="IsConsolidated" type="hidden" value="False" />
+                    <input id="IsToday" name="IsToday" type="hidden" value="True" />
+                    <input id="IsFromDynamicSlots" name="IsFromDynamicSlots" type="hidden" value="False" />
+                    <input data-val="true" data-val-number="The field InstructorId must be a number." id="InstructorId" name="InstructorId" type="hidden" value="" />
+                    <input id="InstructorName" name="InstructorName" type="hidden" value="" />
+                    <input id="CanSelectCourt" name="CanSelectCourt" type="hidden" value="False" />
+                    <input id="IsCourtRequired" name="IsCourtRequired" type="hidden" value="False" />
+                    <input id="CostTypeAllowOpenMatches" name="CostTypeAllowOpenMatches" type="hidden" value="False" />
+                    <input id="IsMultipleCourtRequired" name="IsMultipleCourtRequired" type="hidden" value="False" />
+                    <input data-val="true" data-val-number="The field ReservationQueueId must be a number." id="ReservationQueueId" name="ReservationQueueId" type="hidden" value="" />
+                    <input data-val="true" data-val-number="The field ReservationQueueSlotId must be a number." id="ReservationQueueSlotId" name="ReservationQueueSlotId" type="hidden" value="" />
+                    <input id="RequestData" name="RequestData" type="hidden" value="qN/SWdTdR90al8AcnjfBQUGL6WrmeUGnqL/j9 rLfRcr17FcI9WXOfLs0u8ALXVp0LwEiICbhpEJmpalVE/hPy1UBuYRu8QW71M6vgOrLLlp7tiq1sfQ3cyN DQBvRA6JOLq9Ripgxc=" />
+
+                    <div class='modal-header-container'><div class='modal-title'><span class='modal-title-span'>Book a reservation for 5/27/2024 | Pickleball - Pickleball 1A</span></div><div class='modal-title-buttons'><button type='reset' class='btn btn-light ' data-dismiss='modal'>Close</button><button type='button' class='btn btn-primary btn-submit' onclick='submitCreateReservationForm()'>Save</button></div></div><hr class='modal-header-hr'><script>$(function(){pushMobileArrayTitle('Create Reservation','modal')})</script>
+
+                    <script>
+                        if (isMobileLayout && toBoolean('False')) {
+                            $('#spinnerLayout').css('display', 'block');
+                        }
+                    </script>
+
+                    <div class="modal-body" id="createReservation-Form-container">
+                        
+
+<input data-val="true" data-val-number="The field Id must be a number." id="Id" name="Id" type="hidden" value="12207" />
+<input data-val="true" data-val-number="The field Organization must be a number." data-val-required="The Organization field is required." id="OrgId" name="OrgId" type="hidden" value="12207" />
+<input data-val="true" data-val-date="The field Reservation Date must be a date." data-val-required="The Reservation Date field is required." id="Date" name="Date" type="hidden" value="5/27/2024 12:00:00 AM" />
+<input id="SelectedCourtType" name="SelectedCourtType" type="hidden" value="Pickleball - Pickleball 1A" />
+<input data-val="true" data-val-number="The field SelectedCourtTypeId must be a number." id="SelectedCourtTypeId" name="SelectedCourtTypeId" type="hidden" value="0" />
+<input data-val="true" data-val-number="The field SelectedResourceId must be a number." id="SelectedResourceId" name="SelectedResourceId" type="hidden" value="" />
+<input id="DisclosureText" name="DisclosureText" type="hidden" value="" />
+<input id="DisclosureName" name="DisclosureName" type="hidden" value="" />
+<input id="IsResourceReservation" name="IsResourceReservation" type="hidden" value="False" />
+<input data-val="true" data-val-required="The Start Time field is required." id="StartTime" name="StartTime" type="hidden" value="16:00:00" /><input data-val="true" data-val-number="The field CourtTypeEnum must be a number." id="CourtTypeEnum" name="CourtTypeEnum" type="hidden" value="9" />
+<input data-val="true" data-val-number="The field MembershipId must be a number." id="MembershipId" name="MembershipId" type="hidden" value="115054" />
+<input data-val="true" data-val-number="The field CustomSchedulerId must be a number." id="CustomSchedulerId" name="CustomSchedulerId" type="hidden" value="" />
+<input id="IsAllowedToPickStartAndEndTime" name="IsAllowedToPickStartAndEndTime" type="hidden" value="False" />
+<input id="UseMinTimeByDefault" name="UseMinTimeByDefault" type="hidden" value="False" />
+<input id="IsEligibleForPreauthorization" name="IsEligibleForPreauthorization" type="hidden" value="False" />
+<input id="MatchMakerSelectedRatingIdsString" name="MatchMakerSelectedRatingIdsString" type="hidden" value="" />
+<input id="DurationType" name="DurationType" type="hidden" value="" />
+<input data-val="true" data-val-number="The field MaxAllowedCourtsPerReservation must be a number." id="MaxAllowedCourtsPerReservation" name="MaxAllowedCourtsPerReservation" type="hidden" value="1" /><input id="SelectedResourceName" name="SelectedResourceName" type="hidden" value="" />
+
+
+<script src="/Vendor/Remodal/remodal.js"></script>
+<link href="/Vendor/Remodal/remodal.css" rel="stylesheet" />
+<link href="/Vendor/Remodal/remodal-default-theme.css" rel="stylesheet" />
+<script src="/Vendor/Selectize/js/allowDuplicates/standalone/selectize.js"></script>
+
+<style>
+    .additionalMemberName {
+        float: left;
+    }
+
+    .additionalMemberBtnContainer {
+        float: left;
+        margin-left: 10px;
+    }
+
+    .member-row {
+        display: inline-block;
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .col-xs-12 .addOwnerBtn {
+            margin-top: 0 !important;
+        }
+    }
+
+    .total-due {
+        color: #66c530;
+        font-size: 1.4em;
+    }
+
+    .total-due-amount {
+        color: #5e943f;
+        font-size: 1.5em;
+    }
+
+    .spinner-container.active {
+        z-index: 9999999999999;
+    }
+</style>
+
+
+<script type="text/javascript">
+    selectedMembers = [];
+    oldVal = "";
+    var monthDate = '05/27/2024';
+
+    var date = '05/27/2024';
+    if (isNullOrEmpty(date)) {
+        date = jQuery("#Date").val();
+    }
+    if (isNullOrEmpty(monthDate)) {
+        monthDate = date;
+    }
+
+    var selectedDate = date;
+    var membersWithDisclosures = JSON.parse('[]');
+    var reservationTypesObj = JSON.parse('[{"reservationTypeId":60221,"allowGuests":false,"maxAllowedPeople":null,"minAllowedPeople":null,"allowOpenMatchPlay":false,"applyNumberOfPlayersBasedOnNumberOfCourts":true,"calculationType":1,"defaultFeeResponsibility":null}]');
+    var guestDataBound = false;
+    var enableQuickReservationLockOutPeriod = toBoolean('False');
+    var anyFamilyMembers = toBoolean('False');
+    var allowToSelectGuestOwner = toBoolean('False');
+    var isReservationTypeRebind = false;
+
+    function onOwnersDropdownSearchChange() {
+        var dataItem = $("#OwnersDropdown").data("kendoComboBox").dataItem();
+        if (dataItem === undefined || dataItem === null) {
+        } else {
+            addOwnerToReservation();
+        }
+    }
+
+    function getOwnersDropdownSearchVal() {
+        var ids = [];
+        var val = '';
+        if (isMobileLayout) {
+            val = $('#OwnersDropdown').val();
+        } else {
+            val = $("#OwnersDropdown").data("kendoComboBox").input.val();
+        }
+
+        var userId = $("#RegisteringMemberId").val();
+        var customSchedulerId = null;
+        var isOpenReservation = false;
+        if ($('#IsOpenReservation')[0]) {
+            isOpenReservation = $('#IsOpenReservation').is(':checked');
+        }
+
+
+        $.each(selectedMembers, function(index, member) {
+            ids.push(member.OrgMemberId);
+        });
+
+        if (toBoolean('True')) {
+            ids.push('4442712');
+        }
+
+        return {
+            filterValue: val,
+            organizationMemberIdsString: ids.join(),
+            userId: userId,
+            customSchedulerId: customSchedulerId,
+            isOpenReservation: isOpenReservation
+        };
+    }
+
+    function addOwnerToReservation() {
+        var ownersDropdown = $("#OwnersDropdown").data("kendoComboBox");
+        var owner = ownersDropdown.dataItem(ownersDropdown.select());
+        if (owner) {
+            const name = owner.DisplayName;
+            selectedMembers.push({ OrgMemberId: owner.MemberOrgId });
+            //selectedMembers.push(owner);
+            //displaySelectedOwners();
+            ownersDropdown.text("");
+            ownersDropdown.dataSource.filter({});
+            calculateTotalDue(null, true);
+        } else {
+            swalSettings().fire({
+                title: "Validation Error!",
+                text: 'Please select the player first',
+                icon: "error"
+            });
+        }
+    }
+
+    function addOwnerToReservationMobile(selectedValue) {
+        selectedMembers.push({ OrgMemberId: selectedValue });
+        calculateTotalDue(null, true);
+        $('#OwnersDropdown').val('');
+        $('#OwnersDropdown').trigger('input');
+        setTimeout(function () { $('#OwnersDropdown').focus(); }, 500);
+    }
+
+    function searchMemberTemplate(option, addedList) {
+        var orgMemberId = isNullOrEmpty(option.MemberOrgId) ? option.OrgMemberId : option.MemberOrgId;
+        return `<li class='combobox-li' onclick='addOwnerToReservationMobile(${orgMemberId})' text='${customStringEncode(option.FullName)}' value='${orgMemberId}'>${option.FullName} <button type="button" class='btn btn-secondary add-combobox-li-btn'>ADD</button></li>`
+    }
+
+    function calculateMaxIntervalForEndTimePiker() {
+        const startTime = jQuery("#StartTime").val();
+        const typeId = jQuery('#ReservationTypeId').val();
+        var courtId;
+            
+                courtId = jQuery('#CourtId').val();
+            
+        $.ajax({
+            url:
+                '/Online/AjaxController/GetMaxIntervalForEndTimePikerByReservationType/12207' +
+                    "?reservationTypeId=" +
+                    typeId +
+                    "&time=" +
+                    startTime +
+                    "&selectedDate=" +selectedDate +
+                    "&courtId=" +
+                    courtId +
+                    "&courtType=" +
+                    '9',
+            type: "POST",
+            data: getSelectedModelData(),
+            success: function (data) {
+                if (data.isValid) {
+                    $("#EndTimeSpan").data("kendoTimePicker").value(data.data);
+                    $("#EndTimeSpan").data("kendoTimePicker").trigger("change");
+                }
+            }
+        });
+    }
+
+    function onStartTimeChange() {
+        const isAllowedToPickEndTime = toBoolean('False');
+        if (isAllowedToPickEndTime === false) {
+            rebindKendoDropdown('Duration');
+        } else {
+            calculateMaxIntervalForEndTimePiker();
+        }
+
+        refreshCourts(); //update res ?
+        calculateTotalDue();
+    }
+
+    function onEndTimeChange() {
+        //refreshCourts();
+        rebindKendoListBox('Resources');
+    }
+
+    function onTimeChanged() {
+    }
+
+    function getCriteriatoGetResources() {
+        const courtTypes = '9';
+        
+        const startTime = $("#StartTime").val();
+        const isAllowedToPickTime = toBoolean('False');
+        var reservationTypeId = jQuery("#ReservationTypeId").val();
+        var endTime;
+
+        if (isAllowedToPickTime) {
+            endTime = jQuery("#EndTimeSpan").val();
+        } else {
+            endTime = jQuery("#EndTime").val();
+        }
+
+        var courts;
+            
+                courts = jQuery('#CourtId').val();
+            
+
+        return {
+            Date: date,
+            startTime: startTime,
+            endTime: endTime,
+            courtTypes: courtTypes,
+            selectedCourts: courts,
+            MembershipId: '115054',
+            ReservationTypeId: reservationTypeId,
+            customSchedulerId: '',
+            uiCulture: 'en-US',
+            duration:$('#Duration').val()
+        };
+    }
+    function getCriteriaToGetDurationDropdown() {
+        const startTime = jQuery("#StartTime").val();
+        const typeId = jQuery('#ReservationTypeId').val();
+
+        var selectedDuration = $('#Duration').val();
+
+        if (isReservationTypeRebind) {
+            selectedDuration = null;
+        }
+
+        isReservationTypeRebind = false;
+
+        var courtId;
+            
+                courtId = jQuery('#CourtId').val();
+            
+        const data = {
+            reservationTypeId: typeId,
+            startTime: startTime,
+            selectedDate: monthDate,
+            uiCulture: 'en-US',
+            useMinTimeAsDefault: 'False',
+            courtId: courtId,
+            courtType: '9',
+            endTime: '5:00 PM',
+            isDynamicSlot: 'False',
+            instructorId: '',
+            customSchedulerId: '',
+            selectedDuration: selectedDuration
+        }
+        return data;
+    }
+
+    function onReservationResourceDataBound(e) {
+        fixMobileKendoInputs();
+
+        var data = e.sender.dataSource._data;
+        var multiselect = $("#Resources").data("kendoMultiSelect");
+
+        for (var i=0; i< data.length; i++) {
+            var isRequiredCategory = data[i].AutoSelect;
+            if (isRequiredCategory) {
+                var selected = multiselect.value();
+                var res = $.merge($.merge([], selected), [data[i].Id]);
+                multiselect.value(res);
+            }
+        }
+    }
+
+    function onReservationResourceChange(e) {
+        calculateTotalDue();
+    }
+    function onDurationChange(e) {
+        calcucalteEndTime();
+        oldVal = getKendoDropdownSelectedData("Duration");
+    }
+
+    function onDurationDataBound() {
+        const durationDropdown = $("#Duration").data('kendoDropDownList');
+        durationDropdown.select(function(dataItem) {
+            return dataItem.Selected == true;
+        });
+        const val = getKendoDropdownSelectedData("Duration");
+        durationDropdown.trigger("change");
+    }
+
+    //rebind owners
+    function rebindAllGuestOwnerDd() {
+        var numberOfGuests = jQuery("#SelectedNumberOfGuests").val();
+        for (var i = 0; i < numberOfGuests; i++) {
+            rebindKendoDropdown(`ReservationGuests_${i}__GuestOwnerId`);
+        }
+    }
+
+    //add guest rows
+    function addGuestsFields(e) {
+        //guestsPartialView();
+        calculateTotalDue();
+    }
+
+    function guestsArray(removeGuestAtIndex) {
+        var guests = [];
+        var guestsTable = $("#guestsTable");
+        $(guestsTable).find('tbody > tr').each((index, element) => {
+            const obj = {
+                FirstName: $(element).find($("input[name$='FirstName'")).val(),
+                LastName: $(element).find($("input[name$='LastName'")).val(),
+                PhoneNumber: $(element).find($("input[name$='PhoneNumber'")).val(),
+                GuestOwnerId: $(element).find($(`#ReservationGuests_${index}__GuestOwnerId`)).val(),
+                Id: $(element).find($("input[name$='Id'")).val(),
+                //Fee: $(element).find($("input[name$='Fee'")).val(),
+                //GuestFeeCalculationType: $(element).find($("input[name$='GuestFeeCalculationType'")).val(),
+                Guid: $(element).find($("input[name$='Guid'")).val(),
+                //IsOverriden: $(`#guest_hidden-is-overriden_${$(element).find($("input[name$='Guid'")).val()}`).is(":checked"),
+                //GuestFeeOwner: $(`.guest_fowner_${$(element).find($("input[name$='Guid'")).val()}:checked`).val(),
+                //OverriddenPrice: $(`#guest_override-input_${$(element).find($("input[name$='Guid'")).val()}`).val()
+            }
+            if (removeGuestAtIndex == null || Number(removeGuestAtIndex) != index) {
+                guests.push(obj);
+            }
+        });
+        //calculateTotalDue();
+        return guests;
+    }
+
+    function registeringMemberChanged() {
+        var ids = getAllOrgMemberIds();
+        //need to remove first member family from table
+        if (ids != null && ids.length > 0) {
+            var orgMemberId = ids[0];
+            calculateTotalDue(/*excludeOrganizationMemberId*/ orgMemberId, /*rebindGuests*/ null, /*refillDisclosureMemberIds*/ null, /*forceRemove*/ true);
+        } else {
+            calculateTotalDue();
+        }
+
+        tglAllowMemberToPickOtherPlayers();
+    };
+
+    function tglAllowMemberToPickOtherPlayers() {
+        var typeId = jQuery('#ReservationTypeId').val();
+        var allowMemberToPickMembers = toBoolean('False');
+        var show = allowMemberToPickMembers;
+
+        if (anyFamilyMembers) {
+            var memberDd = $("#RegisteringMemberId").data('kendoDropDownList').dataItem();
+
+            if (memberDd == null || !memberDd.AllowMemberToPickOtherMembersToPlayWith) {
+                show = false;
+            }
+
+            if (memberDd != null && memberDd.AllowMemberToPickOtherMembersToPlayWith) {
+                show = true;
+            }
+        }
+
+        var selectedReservationType = reservationTypesObj.find(obj => obj.reservationTypeId == typeId);
+        if (selectedReservationType != null && selectedReservationType.maxAllowedPeople == 1) {
+            show = false;
+        } else {
+
+        }
+
+        if (enableQuickReservationLockOutPeriod && selectedReservationType != null && selectedReservationType.minAllowedPeople && selectedReservationType.minAllowedPeople > 1) {
+            //always
+            show = false;
+        }
+
+        if (show) {
+            $("#tglAllowMemberToPickOtherMembersToPlayWith").removeClass("hide");
+        } else {
+            $("#tglAllowMemberToPickOtherMembersToPlayWith").addClass("hide");
+        }
+    }
+
+    function displayGuestsContainer() {
+        var typeId = jQuery('#ReservationTypeId').val();
+        var t = $("#ReservationTypeId").data('kendoDropDownList');
+        var data = null;
+        if (t) {
+            data = $("#ReservationTypeId").data('kendoDropDownList') .dataItem();
+        }
+
+        var guestDiv = $(".guestsDiv");
+
+        var selectedReservationType = reservationTypesObj.find(obj => obj.reservationTypeId == typeId);
+
+        if (enableQuickReservationLockOutPeriod && selectedReservationType != null && selectedReservationType.minAllowedPeople && selectedReservationType.minAllowedPeople > 1) {
+            //always
+            $(guestDiv).addClass("hide");
+
+            if ($('#SelectedNumberOfGuests')[0]) {
+                var guestsDropdownList = $("#SelectedNumberOfGuests").data("kendoDropDownList");
+                guestsDropdownList.select(0);
+                $("#guestsListDiv").html('');
+            }
+        } else {
+            if (data != null && data.Id != null) {
+                var display = data.HasGuestFee && data.AllowGuestsOnMemberPortal;
+                if (display) {
+                    rebindGuestsDd();
+
+                    $(guestDiv).removeClass("hide");
+                } else {
+                    $(guestDiv).addClass("hide");
+                    $("#guestsListDiv").html('');
+                    setGuestDd();
+                }
+            } else{
+                $(guestDiv).addClass("hide");
+                $("#guestsListDiv").html('');
+                setGuestDd();
+            }
+        }
+    }
+
+    function showOrHideGuestOwnerColumn() {
+        const ids = selectedMembers.map(el => el.MemberOrgId);
+        if (ids.length && allowToSelectGuestOwner) {
+            $(".guest-Owner").removeClass('hide');
+            $('#guestsTable').addClass('show-owner');
+        } else {
+            $(".guest-Owner").addClass('hide');
+            $('#guestsTable').removeClass('show-owner');
+        }
+        //calculateTotalDue();
+    }
+
+    function getSelectedReservationType() {
+        const selectedResType = $("#ReservationTypeId").val();
+
+        return {
+            id: '12207',
+            reservationTypeId: selectedResType,
+            selectedMembers: selectedMembers.length
+        }
+    }
+
+    function guestsPartialView(removeGuestAtIndex, forceRemove) {
+
+        var guestsNumber = $("#SelectedNumberOfGuests").val();
+        const guestsListDiv = $("#guestsListDiv");
+        var reservationTypeId = $("#ReservationTypeId").val();
+        var startTime = $("#StartTime").val();
+        var endTime = $("#EndTime").val();
+        var isOpenReservation = false;
+
+        if (isMobileLayout && removeGuestAtIndex && !forceRemove) {
+            swalSettings().fire({
+                title: '',
+                icon: 'info',
+                text: `﻿Are you sure you wish to remove this guest?`,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    guestsPartialView(/*removeGuestAtIndex*/ removeGuestAtIndex, /*forceRemove*/ true);
+                }
+            });
+
+            return false;
+        }
+
+        if ($('#IsOpenReservation')[0]) {
+            isOpenReservation = $('#IsOpenReservation').is(':checked');
+        }
+
+        var removeGuest = removeGuestAtIndex >= 0 && removeGuestAtIndex != null;
+        if (removeGuest) {
+            guestsNumber = guestsNumber - 1;
+        }
+        if (removeGuest) {
+            var guestsDropdownList = $("#SelectedNumberOfGuests").data("kendoDropDownList");
+            guestsDropdownList.select(guestsNumber);
+        }
+
+        if (guestsNumber <= 0 || guestsNumber == "0" || guestsNumber == '' ||
+            guestsNumber == ' ' || guestsNumber == undefined || reservationTypeId == undefined || reservationTypeId == 'undefined') {
+            guestsListDiv.addClass('hide');
+            guestsListDiv.html('');
+
+            calculateTotalDue(null, false, null, false, removeGuestAtIndex);
+        } else {
+            calculateTotalDue(null, false, null, false, removeGuestAtIndex);
+
+            
+        }
+    };
+
+    //function checkIfAllowGuests() {
+    //    const selectedReservationType = reservationTypesObj.find(obj => obj.reservationTypeId === parseInt($('select[name=ReservationTypeId]').val()));
+    //    return selectedReservationType.allowGuests;
+    //}
+
+    function rebindGuestsDd() {
+        const ddGuests = $("#SelectedNumberOfGuests").data("kendoDropDownList");
+        if (ddGuests && ddGuests.dataSource) {
+            ddGuests.dataSource.read().then(() => {
+                const elementsArray = ddGuests.dataSource.data().map(el => {
+                    return parseInt(el.Value);
+                });
+                if (elementsArray.length) {
+                    const maxVal = Math.max.apply(Math, elementsArray);
+                    removeRowsFromGuestTable(maxVal);
+                    //guestsPartialView();
+                } else {
+                    removeRowsFromGuestTable(0);
+                }
+            });
+        }
+    }
+
+    function removeRowsFromGuestTable(maxNumberOfGuests = 0) {
+        const guestsTable = document.getElementById("guestsTable");
+        if (typeof guestsTable !== "undefined" && guestsTable !== null) {
+            const rowCount = guestsTable.rows.length - 1;
+
+            if (rowCount > maxNumberOfGuests) {
+                setGuestDd(maxNumberOfGuests);
+                guestsPartialView();
+            }
+        }
+    }
+
+    function setGuestDd(selectedId = 0) {
+        if ($("#SelectedNumberOfGuests")[0]) {
+            $("#SelectedNumberOfGuests").data("kendoDropDownList").select(selectedId);
+        }
+    }
+
+    function getAllOrgMemberIds() {
+        var ids = [];
+        $("#membersTable").find('tbody > tr').each((index, element) => {
+            ids.push($(element).find($("input[name$='OrgMemberId'")).val());
+        });
+
+        return ids;
+    }
+
+    function getSelectedOrgMemberIds() {
+        var ids = getAllOrgMemberIds();
+
+        return {
+            id: '12207',
+            organizationMemberIdsString: ids.join(',')
+        };
+    }
+
+    function dataToGetReservationTypes() {
+        var startTime = jQuery("#StartTime").val();
+        //const date = jQuery("#Date").val();
+        var courtId;
+            
+                courtId = jQuery('#CourtId').val();
+            
+        return {
+            customSchedulerId: '',
+            userId: $("#RegisteringMemberId").val(),
+            startTime: startTime,
+            date: date,
+            courtId: courtId,
+            courtType: '9',
+            endTime: '5:00 PM',
+            isDynamicSlot: 'False',
+            instructorId: ''
+        }
+    }
+
+    function getSelectedModelDataToGetCourts() {
+        const courtDate = jQuery("#Date").val();
+        const startTime = jQuery("#StartTime").val();
+        const endTime = jQuery("#EndTime").val();
+        const courtType = jQuery("#SelectedCourtTypeId").val();
+        const uiCulture = 'en-US';
+        const timeZone = 'America/New_York';
+        var customSchedulerId = '';
+        var instructorId = '';
+        var duration = $('#Duration').val();
+        var cIds = '';
+        var rq = '';
+
+
+        return {
+            Date: courtDate,
+            selectedDate: courtDate, //resource call
+            StartTime: startTime,
+            EndTime: endTime,
+            CourtTypesString: courtType,
+            //UiCulture: uiCulture, double param
+            timeZone: timeZone,
+            customSchedulerId: customSchedulerId,
+            instructorId: instructorId,
+            Duration: duration,
+            AllowPastReservationsUpToXMinutes: '15',
+            ResourceId: '',
+            CourtIdsString: cIds,
+            ReservationQueueSlotId: rq
+        };
+    }
+
+    function onReservationTypeChanged() {
+        var isAllowToPickTime = toBoolean('False');
+        var startTime = jQuery("#StartTime").val();
+        var typeId = jQuery('#ReservationTypeId').val();
+        var courtId;
+            
+                courtId = jQuery('#CourtId').val();
+            
+        tglAllowMemberToPickOtherPlayers();
+
+
+        if (isAllowToPickTime) {
+            calculateMaxIntervalForEndTimePiker();
+        } else {
+            jQuery.ajax({
+                url: 'https://api4.courtreserve.com/api/v1/portalreservationsapi/Api_GetMaxReservationTimeByReservationType?id=12207' +
+                    "&reservationTypeId=" +
+                    typeId + "&time=" + startTime +
+                    "&uiCulture=en-US" +
+                    "&selectedDate=" + selectedDate +
+                    "&courtId=" +
+                    courtId +
+                    "&courtType=" +
+                    '9&' +
+                    'endTime=5:00 PM&isDynamicSlot=False',
+                type: "POST",
+                data: getSelectedModelData(),
+                success: function(data) {
+                    var isAllowToPickTime = toBoolean('False');
+                    var endPicker;
+                    if (isAllowToPickTime) {
+                        endPicker = $("#EndTimeSpan");
+                    } else {
+                        endPicker = $("#EndTime");
+                    }
+                    if (data.isValid) {
+                        jQuery("#reservationMaxTime").val(data.maxMinutes);
+                    } else {
+                        endPicker.val("");
+                        jQuery("#reservationMaxTime").val(0);
+                    }
+                    isReservationTypeRebind = true;
+                    rebindKendoDropdown("Duration");
+                    toggleResources(data.allowResource);
+                    rebindKendoListBox('Resources');
+                }
+            });
+        }
+        if (typeId && typeId !== null && typeId !== 0) {
+            var url = 'https://api4.courtreserve.com/Online/AjaxReservation/Api_GetUdfsByReservationTypeOnReservationCreate?id=12207&amp;uiCulture=en-US'+"&reservationTypeId=" + typeId;
+
+            jQuery.ajax({
+                url: url,
+                type: "GET",
+                success: function(data) {
+                    jQuery("#reservationUdfsContainer").replaceHtml(data);
+                }
+            });
+        } else {
+            jQuery("#reservationUdfsContainer").replaceHtml("");
+        }
+
+
+        displayGuestsContainer();
+
+        showOrHidePreAuthorizationMessage();
+        tglReservationLockOutPeriodSettings();
+        tglAllowOpenMatch();
+        tglFeeResponsibility();
+    }
+
+
+    function onMatchMakerRatingCategoryChange() {
+        checkRatingDropdownsToHide();
+    }
+
+    function onCourtIdChange() {
+        if (toBoolean('False')) {
+            rebindKendoListBox('Resources');
+        }
+    }
+
+    function onCourtIdDataBound() {
+        if (isMobileLayout) {
+            var courtIdDropdownList = $('#CourtId').data('kendoDropDownList');
+
+            if (isNullOrEmpty(courtIdDropdownList.value())) {
+                var courtIdDataSource = courtIdDropdownList.dataSource.data();
+                var firstItemCourtId = courtIdDataSource.length > 0 ? courtIdDataSource[0] : null;
+                if (!isNullOrEmpty(firstItemCourtId)) {
+                    let courtIdToSelect = firstItemCourtId.Id;
+                    courtIdDropdownList.value(courtIdToSelect);
+                    courtIdDropdownList.trigger("change");
+                }
+            }
+        }
+    }
+
+    function checkRatingDropdownsToHide() {
+        $(".rating-category-container").addClass("hide");
+        var id = $('#MatchMakerRatingCategoryId').val();
+
+        $(`.rating-category-${id}`).removeClass("hide");
+        $("#MatchMakerSelectedRatingIdsString").val("");
+
+        var ratingDivs = $('.mm-rating-dropdown');
+
+        if (ratingDivs != null) {
+            $.each(ratingDivs, function(key, value) {
+                var id = $(this).attr("id");
+                if (id) {
+                    var multi = $("#" + id).data("kendoMultiSelect");
+                    if (multi) {
+                        multi.value("");
+                        multi.trigger("change");
+                    }
+                }
+            });
+        }
+    }
+
+    function matchMakerRatingsChange(e) {
+        var id = e.sender.element[0].id;
+        var ratingIds = getKendoMultiSelectAsString(id);
+        $("#MatchMakerSelectedRatingIdsString").val(ratingIds);
+    }
+
+    function tglAllowOpenMatch() {
+    }
+
+    function getCourtsCount() {
+        var count = 1;
+
+        return count;
+    }
+
+    function tglReservationLockOutPeriodSettings() {
+        if (enableQuickReservationLockOutPeriod) {
+            var reservationTypeId = jQuery('#ReservationTypeId').val();
+            var selectedReservationType = reservationTypesObj.find(obj => obj.reservationTypeId == reservationTypeId);
+            var allowToPickMembersToPlayWith = toBoolean('False');
+
+            var setInitialSettings = true;
+            var diffPlayers = 0;
+
+            if (selectedReservationType != null && selectedReservationType.minAllowedPeople != null && selectedReservationType.minAllowedPeople > 0) {
+                var minAllowedPeople = selectedReservationType.minAllowedPeople;
+                var totalPlayersCount = getAllOrgMemberIds().length;
+                var guestNumberDd = $('#SelectedNumberOfGuests');
+
+                if (guestNumberDd) {
+                    var guestValue = guestNumberDd.val();
+                    if (guestValue && guestValue > 0) {
+                        totalPlayersCount = parseInt(totalPlayersCount) + parseInt(guestNumberDd.val());
+                    }
+                }
+
+                if (anyFamilyMembers) {
+                    var memberDd = $("#RegisteringMemberId").data('kendoDropDownList').dataItem();
+
+                    if (memberDd == null || !memberDd.AllowMemberToPickOtherMembersToPlayWith) {
+                        allowToPickMembersToPlayWith = false;
+                    }
+                }
+
+                diffPlayers = parseInt(minAllowedPeople) - parseInt(totalPlayersCount);
+                if (minAllowedPeople > totalPlayersCount && (allowToPickMembersToPlayWith || selectedReservationType.allowGuests)) {
+                    setInitialSettings = false;
+                }
+            }
+
+            var isOpenReservation = $('#IsOpenReservation').is(':checked');
+
+            if (setInitialSettings || isOpenReservation) {
+                $('.modal-title-buttons .btn-submit').html('SAVE');
+                //$('.modal-footer-container #reservationLockOutPeriod').remove();
+            } else {
+                $('.modal-title-buttons .btn-submit').html('SAVE & ADD PLAYER(S)');
+                //$('.modal-footer-container #reservationLockOutPeriod').remove();
+                //$('.modal-footer-container').prepend(`<div id='reservationLockOutPeriod'>You will have 5 minute(s) to add ${diffPlayers} additional player(s)</div>`);
+            }
+        }
+    }
+
+    function showOrHidePreAuthorizationMessage() {
+        var postData = {
+            ReservationTypeId: $("#ReservationTypeId").val(),
+            Date: date
+        };
+        var usePreauth = toBoolean('False');
+        if (!usePreauth) {
+            $('#pre-authorization-payment-message').addClass('hide');
+        } else {
+            jQuery.ajax({
+                url: '/Online/AjaxController/CheckIfEligibleToPreAuthorization/12207',
+                type: "POST",
+                data: postData,
+                success: function(data) {
+                    if (data) {
+                        $('#pre-authorization-payment-message').removeClass('hide');
+                    } else {
+                        $('#pre-authorization-payment-message').addClass('hide');
+                    }
+                }
+            });
+        }
+    }
+
+    var cloneMembersHtml = false;
+    function addSelectedMembers(clone) {
+        if (isMobileLayout) {
+            //prevent on first loading multiple replaces
+            $('.combobox-container-selected').html('');
+            $('.combobox-container-selected').html($("#members-container-wrapper").html());
+            $('.combobox-container-selected').append('<div class="search-member-description">Search for Additional Players</div>');
+
+        }
+    }
+
+    $(document).on("change", ".guestOwnerDropDown", function() {
+        calculateTotalDue();
+    });
+    function onSportTypeChanged() {
+
+    }
+
+    function tglPlayerMatchMakerMinMaxPlayers(min,max,applyReadOnly) {
+    }
+
+    $(document).on("change", "#IsOpenReservation", function () {
+        onIsOpenMatchChanged();
+    });
+    function onIsOpenMatchChanged() {
+        if ($('#IsOpenReservation').is(":checked")) {
+            $('#reservation-general-info').addClass("collapse");
+            $('.card-section').addClass("card");
+            $('.card-body-section').addClass("card-body");
+            $('#reservation-general-info').removeClass("show");
+            $('#createReservation-Form').removeClass("not-open-match-modal");
+        } else {
+            $('#reservation-general-info').removeClass("panel-collapse");
+            $('#reservation-general-info').removeClass("collapse");
+            $('#reservation-general-info').removeClass("show");
+            $('.card-section').removeClass("card");
+            $('.card-body-section').removeClass("card-body");
+            $('#createReservation-Form').addClass("not-open-match-modal");
+
+            if ($('.disclosure-description')[0]) {
+                var totalHtml = $('#totalCostContainer').clone();
+                $('#totalCostContainer').remove();
+                $('#createReservation-Form-container').append(totalHtml);
+            }
+        }
+    }
+    function onCourtsChanged() {
+        calculateTotalDue();
+        tglAllowOpenMatch();
+        rebindKendoListBox("Resources");
+    }
+    function getSelectedReservationTypeObj() {
+        var rtId = $('#ReservationTypeId').val();
+        if (isNullOrEmpty(rtId)==false) {
+            var selectedReservationType = reservationTypesObj.find(obj => obj.reservationTypeId == rtId);
+            return selectedReservationType;
+
+        }
+        return null;
+    }
+
+    function tglFeeResponsibility(preventRadioChange) {
+        var selectedReservationType = getSelectedReservationTypeObj();
+        if (isNullOrEmpty(selectedReservationType) == false) {
+            if (selectedReservationType.calculationType == '4') {
+
+                var numberOfGuests = $('#SelectedNumberOfGuests').val();
+                if (isNullOrEmpty(numberOfGuests)) {
+                    numberOfGuests = 0;
+                }
+
+                var allRegistrantsCount = numberOfGuests + selectedMembers.length;
+
+                if (allRegistrantsCount > 0) {
+                    $('.fee-responsibility-section').removeClass('hide');
+                } else {
+                    $('.fee-responsibility-section').addClass('hide');
+                }
+
+                if (!preventRadioChange) {
+                    if (selectedReservationType.defaultFeeResponsibility == '1') {
+                        $('#FeeResponsibility_1').prop('checked', true);
+                        if (isMobileLayout) {
+                            try {
+                                $('#FakeFeeResponsibility').data("kendoDropDownList").value('1');
+                            } catch(e){}
+                        }
+                    }
+                    if (selectedReservationType.defaultFeeResponsibility == '2') {
+                        $('#FeeResponsibility_2').prop('checked', true);
+                        if (isMobileLayout) {
+                            try {
+                                $('#FakeFeeResponsibility').data("kendoDropDownList").value('2');
+                            } catch(e){}
+                        }
+                    }
+                }
+
+                return;
+            }
+        }
+
+        $('.fee-responsibility-section').addClass('hide');
+    }
+    function feeResponsibilityOnChange(e) {
+        calculateTotalDue();
+    }
+
+    function getFeeResponsibility() {
+        if (toBoolean('False')) {
+            return $('input[name="FeeResponsibility"]:checked').val();
+        }
+        return null;
+    }
+    function feeResponsibilityDDOnChange() {
+        var selectedValue = $('#FakeFeeResponsibility').val();
+        if (selectedValue) {
+            if (selectedValue == '1') {
+                $('#FeeResponsibility_1').prop('checked', true);
+                $('#FeeResponsibility_1').trigger('change');
+            } else {
+                $('#FeeResponsibility_2').prop('checked', true);
+                $('#FeeResponsibility_2').trigger('change');
+            }
+        }
+    }
+</script>
+
+
+
+
+
+<div class="panel-group">
+    <div class="panel">
+        <div class=" card-section">
+            <div class="colapsed-header-rcu tglIsOpenReservation" style="display: none">
+                <div class="card-header accordion-toggle collapsed" href="#reservation-general-info" style="cursor:pointer" data-toggle="collapse" aria-expanded="true">
+                    <h5 class="mb-0 panel-title">
+                        <span>
+                            General Info
+                        </span>
+                    </h5>
+                </div>
+            </div>
+
+            <div id="reservation-general-info" class="">
+                <div class=" card-body-section">
+                    <div class="row">
+
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-6">
+                            <label for="ReservationTypeId" id="reservationTypeIdLabel" class="required-label">Reservation Type </label>
+                                <div class="block">
+<input class="form-control max-450 fn-required-dd-item" data-val="true" data-val-number="The field Reservation Type must be a number." data-val-required="The Reservation Type field is required." id="ReservationTypeId" name="ReservationTypeId" type="text" value="60221" /><script>
+	kendo.syncReady(function(){jQuery("#ReservationTypeId").kendoDropDownList({"change":onReservationTypeChanged,"dataBound":onReservationTypeChanged,"open":globalKendoDDOpen,"dataSource":{"transport":{"read":{"url":"/Online/AjaxReservation/GetAvailableReservationTypes/12207","data":dataToGetReservationTypes},"prefix":""},"schema":{"errors":"Errors"}},"dataTextField":"DisplayName","optionLabelTemplate":"\u003cspan class=\u0027k-optional-label\u0027\u003e-- Reservation Type --\u003c/span\u003e","dataValueField":"Id","optionLabel":"-- Reservation Type --"});});
+</script>
+                                </div>
+                            <span class="field-validation-valid" data-valmsg-for="ReservationTypeId" data-valmsg-replace="true"></span>
+                        </div>
+
+                    </div>
+                    <script>
+                        if (isMobileLayout) {
+                            if (toBoolean('False')) {
+
+                                setTimeout(function() { $("#ReservationTypeId").data('kendoDropDownList').open(); }, 500);
+
+                                setTimeout(function() { $('#spinnerLayout').css('display', 'none'); }, 700);
+                            }
+                        }
+                    </script>
+
+
+                    <div class="row">
+                            <div class="form-group col-lg-3">
+                                <label for="StartTime">Start Time</label>
+                                <span class="form-control display-end-time form-control-display" disabled="disabled">
+                                    4:00 PM
+                                </span>
+                                <span class="field-validation-valid" data-valmsg-for="StartTime" data-valmsg-replace="true"></span>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label class="required-label" for="Duration">Duration</label>
+                                <div class="block">
+<input class="form-control fn-required-dd-item" data-val="true" data-val-number="The field Duration must be a number." data-val-requiredif="Duration is required." data-val-requiredif-dependentproperty="IsAllowedToPickStartAndEndTime" data-val-requiredif-dependentvalue="False" data-val-requiredif-operator="EqualTo" id="Duration" name="Duration" style="width:100%" type="text" /><script>
+	kendo.syncReady(function(){jQuery("#Duration").kendoDropDownList({"dataBound":onDurationDataBound,"change":onDurationChange,"open":globalKendoDDOpen,"dataSource":{"transport":{"read":{"url":"https://api4.courtreserve.com/api/v1/portalreservationsapi/GetDurationDropdown?id=12207","data":getCriteriaToGetDurationDropdown},"prefix":""},"schema":{"errors":"Errors"}},"dataTextField":"Text","autoBind":false,"dataValueField":"Value"});});
+</script>
+                                </div>
+                                <span class="field-validation-valid" data-valmsg-for="Duration" data-valmsg-replace="true"></span>
+                            </div>
+                            <div class="form-group col-lg-3 fn-endtime-container hide">
+                                <label for="EndTime">End Time</label> <span class="field-validation-valid" data-valmsg-for="EndTime" data-valmsg-replace="true"></span>
+                                <input class="form-control display-end-time form-control-display" disabled="disabled" id="EndTime" name="EndTime" type="text" value="5:00 PM" />
+                            </div>
+                    </div>
+
+<input data-val="true" data-val-number="The field Court must be a number." id="CourtId" name="CourtId" type="hidden" value="46166" />
+                    <div class="row hide" id="tglAllowMemberToPickOtherMembersToPlayWith">
+                        <div class="form-group col-lg-7 col-sm-7 col-xs-12">
+                                <label for="OwnersDropdown">Additional Player(s)</label>
+                                <small class="owner-helper-text d-xs-block">(Enter at least 3 letters)</small>
+                                <div class="d-block">
+<input class="form-control" id="OwnersDropdown" name="OwnersDropdown" placeholder="Search for..." type="text" /><script>
+	kendo.syncReady(function(){jQuery("#OwnersDropdown").kendoComboBox({"change":onOwnersDropdownSearchChange,"open":globalKendoMultiselectOpen,"dataSource":{"transport":{"read":{"url":"https://api4.courtreserve.com/api/v1/portalreservationsapi/Api_Reservation_GetMembersToPlayWith?id=12207&costTypeId=115054","data":getOwnersDropdownSearchVal},"prefix":""},"serverFiltering":true,"filter":[],"schema":{"errors":"Errors"}},"dataTextField":"DisplayName","filter":"contains","minLength":3,"autoBind":false,"dataValueField":"MemberId","placeholder":"Search for other player(s) to play with"});});
+</script>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-lg-12 col-xs-12 hide" id="DisplayMembersContainer">
+
+                        </div>
+                    </div>
+
+                        <div class="row">
+                            <div class="form-group col-lg-3 hide guestsDiv" id="guestsDiv">
+                                <label for="SelectedNumberOfGuests"># of Guest(s)</label>
+                                <div class="block">
+                                    <input class="form-control" id="SelectedNumberOfGuests" name="SelectedNumberOfGuests" style="width: 100%" type="text" value=" " /><script>
+	kendo.syncReady(function(){jQuery("#SelectedNumberOfGuests").kendoDropDownList({"change":addGuestsFields,"open":globalKendoDDOpen,"dataSource":{"transport":{"read":{"url":"https://api4.courtreserve.com/api/v1/portalreservationsapi/Api_GetNumberOfGuestsByReservationType?id=12207","data":getSelectedReservationType},"prefix":""},"schema":{"errors":"Errors"}},"dataTextField":"Text","optionLabelTemplate":" ","dataValueField":"Value","optionLabel":" "});});
+</script>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="hide col-lg-12 custom-lg-12 mb10" id="guestsListDiv">
+
+                            </div>
+                        </div>
+
+
+
+                    <div id="reservationUdfsContainer">
+                        
+
+<div class="row fn-udf-outer-container">
+</div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="row totalCostContainer" id="totalCostContainer" style="display: none;">
+            <div class="col-lg-8 d-flex">
+            </div>
+            <div class="col-lg-4" style="text-align: right; margin: auto;">
+                <label class="total-due">Total Due:</label>
+                <label class="total-due-amount">
+                    $0
+                </label>
+
+                <span class="mp-type-tax"></span>
+            </div>
+    </div>
+
+<input type="hidden" id="reservationMaxTime" />
+
+
+
+
+<script type="text/javascript">
+    function getSelectedModelData() {
+        var isAllowToPickTime = toBoolean('False');
+        var startTime = $("#StartTime").val();
+        var endTime;
+        if (isAllowToPickTime) {
+            endTime = $("#EndTimeSpan").val();
+        } else {
+            endTime = $("#EndTime").val();
+        }
+        //var date = '5/27/2024 12:00:00 AM';
+        var model = {
+            date: date,
+            startTime: startTime,
+            endTime: endTime,
+            useMinTimeAsDefault: 'False'
+        };
+        return model;
+    }
+    function getFilterDataToGetResources() {
+    }
+    function toggleResources(show) {
+        var resourceContainer = $(".tglResource");
+        // class exists
+        if (resourceContainer[0]) {
+            if (show) {
+                resourceContainer.removeClass("hide");
+            } else {
+                resourceContainer.addClass("hide");
+            }
+        }
+    }
+
+    function calcucalteEndTime() {
+        var duration = $("#Duration").val();
+        var startTime = jQuery("#StartTime").val();
+        var reservationTypeId = $("#ReservationTypeId").val();
+        //var selectedDate = jQuery("#Date").val();
+
+        if (duration && duration > 0) {
+            jQuery.ajax({
+                url: 'https://api4.courtreserve.com/api/v1/portalreservationsapi/CalculateReservationEndTime?id=12207' +
+                    "&reservationTypeId=" + reservationTypeId +
+                    "&selectedDate=" + selectedDate +
+                    "&startTime=" + startTime +
+                    "&uiCulture=en-US"  +
+                    "&duration=" + duration,
+                type: "GET",
+                async: true,
+                data: getSelectedModelData(),
+                success: function(data) {
+                    var endtime = $("#EndTime").val(data.data);
+                    endtime.trigger("change");
+                    var $el = $('.fn-endtime-container');
+
+                    if (data && data.isValid) {
+                        $el.removeClass('hide');
+                    } else {
+                        $el.addClass('hide');
+                    }
+
+                    //guestsPartialView(null, true);
+                    //calculateTotalDue(null, true);
+                }
+            });
+        }
+
+    }
+
+    function handleDisplayCost(cost) {
+        var reservationTypeId = $("#ReservationTypeId").val();
+        if (cost > 0 && reservationTypeId > 0) {
+            jQuery(".total-due-amount").html("$" + cost.toFixed(2));
+            jQuery(".totalCostContainer").show();
+        } else {
+            jQuery(".total-due-amount").html("$0");
+            jQuery(".totalCostContainer").hide();
+        }
+    }
+
+    isAsync = false;
+    function getPrice(postData) {
+        return new Promise((resolve, reject) => {
+            jQuery.ajax({
+                url: 'https://api4.courtreserve.com/Online/AjaxController/Api_CalculateReservationCostMemberPortal?id=12207&amp;authUserId=5663355&amp;uiCulture=en-US',
+                type: "POST",
+                data: postData,
+                async: isAsync,
+                success: function(data) {
+                    isAsync = true;
+                    resolve(data);
+                }
+            });
+        });
+    }
+
+    function modalDisclosureUpdated() {
+        calculateTotalDue(null, null, true);
+    }
+
+    $(document).on('change', '#IsOpenReservation', function() {
+        calculateTotalDue();
+
+        if ($(this).is(':checked')) {
+            $('#reservationMiscFeesContainer').addClass('hide');
+            if ($("#ReservationMiscFees")[0]) {
+                var $select = $("#ReservationMiscFees").selectize();
+                var selectize = $select[0].selectize;
+                selectize.setValue('');
+            }
+        } else {
+            $('#reservationMiscFeesContainer').removeClass('hide');
+        }
+    });
+
+    function calculateTotalDue(excludeOrganizationMemberId, rebindGuests, refillDisclosureMemberIds, forceRemove, removeGuestAtIndex) {
+        if (isMobileLayout && excludeOrganizationMemberId && !forceRemove) {
+            swalSettings().fire({
+                title: '',
+                icon: 'info',
+                text: `﻿Are you sure you wish to remove this player?`,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    calculateTotalDue(/*excludeOrganizationMemberId*/ excludeOrganizationMemberId, /*rebindGuests*/ rebindGuests, /*refillDisclosureMemberIds*/ refillDisclosureMemberIds, /*forceRemove*/ true, /*removeGuestAtIndex*/ removeGuestAtIndex);
+                }
+            });
+
+            return false;
+        }
+
+        if (selectedMembers.length > 0) {
+            createSpinner("#DisplayMembersContainer", true, false, '', false, false);
+        }
+
+        var isAllowToPickTime = toBoolean('False');
+        var start = jQuery("#StartTime").val();
+        var endTime;
+        if (isAllowToPickTime) {
+            endTime = jQuery("#EndTimeSpan").val();
+        } else {
+            endTime = jQuery("#EndTime").val();
+        }
+
+        var resources = getKendoListBoxSelectedData("Resources");
+        var courtIds = "";
+
+        if (toBoolean('False')) {
+            resources = '';
+
+            var readDropdown = toBoolean('False');
+            if (readDropdown) {
+                courtIds = $("#CourtId").val();
+            } else {
+                courtIds = '46166';
+            }
+        }
+
+        var costs = getSelectedValFromSelectizeDropdown("ReservationMiscFees");
+        var courtType = '9';
+        var organizationMembers = [];
+        var ownerDataItem = null;
+        var registeringOrganizationMemberId = null;
+        var registeringOrganizationMemberFamilyId = null;
+        if ($("#RegisteringMemberId")[0]) {
+
+            ownerDataItem = $("#RegisteringMemberId").data("kendoDropDownList").dataItem();
+            if (ownerDataItem != null) {
+                registeringOrganizationMemberId = ownerDataItem.OrgMemberId;
+                registeringOrganizationMemberFamilyId = ownerDataItem.MemberFamilyId;
+                organizationMembers.push({
+                    OrgMemberId: ownerDataItem.OrgMemberId,
+                    //PriceToPay: priceToPay,
+                    //MemberId: ownerDataItem.Id,
+                    FirstName: ownerDataItem.FirstName,
+                    LastName: ownerDataItem.LastName,
+                    Email: ownerDataItem.Email
+                });
+            }
+        }
+
+        if (excludeOrganizationMemberId != null && excludeOrganizationMemberId > 0) {
+            selectedMembers = jQuery.grep(selectedMembers,
+                function(orgMember) {
+                    return orgMember.OrgMemberId != excludeOrganizationMemberId;
+                });
+        }
+
+        var numberOfGuests = $('#SelectedNumberOfGuests').val();
+        //need to add only "base" owner id's to calculate pricing
+        const guestsTable = $("#guestsTable");
+        if (allowToSelectGuestOwner && guestDataBound == false) {
+            numberOfGuests = 0;
+            $(guestsTable).find('tbody > tr').each((index, element) => {
+                var input = $(element).find($(`#ReservationGuests_${index}__GuestOwnerId`)).data("kendoDropDownList");
+                var dataItem = input.dataItem();
+                var guestOwnerId = dataItem.Id;
+                var guestOwnerMemberId = dataItem.MemberId;
+                var guestMemberFamilyId = dataItem.MemberFamilyId;
+
+                if ($("#RegisteringMemberId")[0]) {
+                    if (selectedMembers.length == 0 && (guestOwnerId == null || guestOwnerId == "") ||
+                        selectedMembers.length > 0 &&
+                        (guestOwnerId == registeringOrganizationMemberId ||
+                            registeringOrganizationMemberFamilyId != null && registeringOrganizationMemberFamilyId == guestMemberFamilyId)) {
+                        if (removeGuestAtIndex == null || Number(removeGuestAtIndex) != index) {
+                            numberOfGuests += 1;
+                        }
+
+                    }
+                } else {
+                    //without family
+                    if (selectedMembers.length == 0 ||
+                        selectedMembers.length > 0 && guestOwnerMemberId == '5663355') {
+
+                        if (removeGuestAtIndex == null || Number(removeGuestAtIndex) != index) {
+                            numberOfGuests += 1;
+                        }
+                    }
+                }
+            });
+        }
+
+        $.each(selectedMembers,
+            function(index, member) {
+                var priceToPay = 0;
+                var memberId = 0;
+                var memberFamilyId = 0;
+                var firstname = '';
+                var lastName = '';
+                var email = '';
+                var membershipNumber = '';
+                if ($(`#hidden-price-to-pay_${member.OrgMemberId}`)[0]) {
+                    priceToPay = $(`#hidden-price-to-pay_${member.OrgMemberId}`).val();
+                }
+                if ($(`#hidden-memberid_${member.OrgMemberId}`)[0]) {
+                    memberId = $(`#hidden-memberid_${member.OrgMemberId}`).val();
+                }
+                if ($(`#hidden-memberfamilyid_${member.OrgMemberId}`)[0]) {
+                    memberFamilyId = $(`#hidden-memberfamilyid_${member.OrgMemberId}`).val();
+                }
+                if ($(`#hidden-firstname_${member.OrgMemberId}`)[0]) {
+                    firstname = $(`#hidden-firstname_${member.OrgMemberId}`).val();
+                }
+                if ($(`#hidden-lastname_${member.OrgMemberId}`)[0]) {
+                    lastName = $(`#hidden-lastname_${member.OrgMemberId}`).val();
+                }
+                if ($(`#hidden-email_${member.OrgMemberId}`)[0]) {
+                    email = $(`#hiddenemail_${member.OrgMemberId}`).val();
+                }
+                if ($(`#membership_number_${member.OrgMemberId}`)[0]) {
+                    membershipNumber = $(`#membership_number_${member.OrgMemberId}`).val();
+                }
+                if (excludeOrganizationMemberId != member.OrgMemberId) {
+                    organizationMembers.push({
+                        OrgMemberId: member.OrgMemberId,
+                        PriceToPay: priceToPay,
+                        MemberId: memberId,
+                        MemberFamilyId: memberFamilyId,
+                        OrgMemberFamilyId: memberFamilyId,
+                        FirstName: firstname,
+                        LastName: lastName,
+                        Email: email,
+                        MembershipNumber: membershipNumber
+                    });
+                }
+            });
+
+        //var date = '5/27/2024 12:00:00 AM';
+        var isOpenReservation = false;
+        if ($("#IsOpenReservation")[0]) {
+            isOpenReservation = $("#IsOpenReservation").is(":checked");
+        }
+        var courtId = '';
+        if (toBoolean('False')) {
+            courtId = $('#CourtIds').val();
+        } else if (toBoolean('False')) {
+            // resource, even if is hidden
+            courtId = $('#CourtId').val();
+        }
+
+        tglFeeResponsibility(/*preventRadioChange*/true);
+        var postData = {
+            Start: start,
+            End: endTime,
+            CourtType: courtType,
+            ResourceIds: resources,
+            MiscFees: costs,
+            ReservationTypeId: $("#ReservationTypeId").val(),
+            RegisteringOrganizationMemberId: registeringOrganizationMemberId,
+            Date: date,
+            NumberOfGuests: numberOfGuests,
+            MembersString: JSON.stringify(organizationMembers),
+            InstructorId: '',
+            MembersWithDisclosures: membersWithDisclosures,
+            RefillMemberDisclosures: refillDisclosureMemberIds,
+            GuestsString: JSON.stringify(guestsArray(removeGuestAtIndex)),
+            IsOpenReservation: isOpenReservation,
+            CourtId: courtId,
+            SelectedNumberOfGuests: $('#SelectedNumberOfGuests').val(),
+            FeeResponsibility: getFeeResponsibility(),
+            AuthUserId: '5663355',
+            IsMobileLayout: toBoolean('False'),
+    };
+
+        var cost = 0;
+
+        getPrice(postData).then((data) => {
+            cost = parseFloat(data.totalCost);
+            handleDisplayCost(cost);
+
+            $('.combobox-container-selected').html('');
+            displayMemberTable(data);
+            addSelectedMembers();
+            displayGuestTableTable(data,forceRemove);
+            //need to rebind guest(s) after member table is created
+            //if (rebindGuests) {
+            //    showOrHideGuestOwnerColumn();
+            //    displayGuestsContainer();
+            //    //rebindGuestsDd();
+            //    //rebindAllGuestOwnerDd();
+            //    guestsPartialView();
+            //}
+
+            tglReservationLockOutPeriodSettings();
+        });
+    }
+
+    function displayMemberTable(data) {
+        if (data.memberTable == null) {
+            $("#DisplayMembersContainer").html("");
+        } else {
+            $("#DisplayMembersContainer").html(data.memberTable);
+
+            if (!isMobileLayout || toBoolean('True')) {
+                $("#DisplayMembersContainer").removeClass("hide");
+            }
+        }
+
+        taxRate = data.taxRate;
+    }
+
+    function displayGuestTableTable(data, removeGuest) {
+        displayGuestsContainer();
+        const guestsListDiv = $("#guestsListDiv");
+        var guestsNumber = $("#SelectedNumberOfGuests").val();
+        if (isNullOrEmpty(guestsNumber) == false) {
+            guestsListDiv.removeClass('hide');
+            guestsListDiv.html(data.guestTable);
+        } else {
+            guestsListDiv.addClass('hide');
+            guestsListDiv.html('');
+        }
+
+        showOrHideGuestOwnerColumn();
+
+        if (removeGuest) {
+            var guestsDropdownList = $("#SelectedNumberOfGuests").data("kendoDropDownList");
+            if (!isNullOrEmpty(guestsDropdownList)) {
+                guestsDropdownList.select(guestsNumber);
+            }
+        }
+    }
+
+    function refreshCourts() {
+        var elem = $('#CourtId').data('kendoDropDownList');
+        if (elem) {
+            elem.dataSource.read();
+        } else {
+            elem = $('#CourtId').data('kendoMultiSelect');
+            if (elem) {
+                elem.dataSource.read();
+            }
+        }
+
+        rebindKendoMultiselect('CourtIds');
+    }
+
+    $(function () {
+        var selectedReservationTypeId = $('#ReservationTypeId').val();
+        if (!isNullOrEmpty(selectedReservationTypeId)) {
+            onReservationTypeChanged();
+        } else {
+            calculateTotalDue();
+        }
+
+        overrideDateTimeValidators();
+        calculateTotalDue();
+        toggleFucn();
+        //onReservationTypeChanged();
+        $(".k-widget").removeClass("input-validation-error");
+
+        jQuery("#EndTime").on("change", function () {
+            setTimeout(function() {
+                calculateTotalDue();
+            }, 500);
+
+        });
+
+        jQuery("#LookingForOponents").on("change",
+            function() {
+                if (jQuery(this).is(":checked")) {
+                    jQuery(".oponentsSection").removeClass("hide");
+                } else {
+                    jQuery(".oponentsSection").addClass("hide");
+                }
+            });
+    });
+</script>
+
+
+                    </div>
+
+                    <hr class='modal-footer-hr'><div class='modal-footer-container'><div class='modal-title-buttons '><button type='reset' class='btn btn-light ' data-dismiss='modal'>Close</button><button type='button' class='btn btn-primary btn-submit ' onclick = 'submitCreateReservationForm()'>Save</button></div></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var submitIntervalId;
+
+    function goHomePage() {
+        window.location = "/Online/Portal/Index/12207";
+    }
+    function reservationFunctionSuccess(result, ref) {
+        try {
+            clearInterval(submitIntervalId);
+            $('.modal-body').removeClass('no-overflow');
+            $(`#createReservation-Form-container .spinner-container.active`).remove();
+        } catch (e) {
+
+        }
+
+        if (result.isValid) {
+            if (result.isRedirect) {
+                var url = result.url;
+                window.location = url;
+            } else {
+                rebindScheduler("CourtsScheduler");
+                var entityTitle = ($('#IsOpenReservation').is(':checked') ? 'Open Reservation' : 'Reservation');
+                if (toBoolean('False')) {
+                    entityTitle = 'Lesson';
+                }
+
+                if (result.mustBeApproved) {
+                    jQuery("#main-reservation-container").replaceHtml(result.data);
+                    removeFirstMobileModalFromArray();
+
+                    pNotifyInfo(`The ${entityTitle.toLowerCase()} successfully created and is pending approval.`);
+                } else {
+                    closeLastModalDialog();
+                    var msg = result.AdditionalMesage;
+                    if (msg != null && msg != "") {
+                        Swal.fire({
+                            icon: 'success',
+                            html: msg,
+                            confirmButtonText: "OK"
+                        });
+                    } else {
+                        pNotifySuccess(`${entityTitle} Confirmed.`);
+                    }
+                }
+
+                enableButtonsByClass('btn-submit');
+
+                if (toBoolean('False')) {
+                    rebindSchedulerWithRefresh("ConsolidatedScheduler");
+                }
+                var isInstructorScheduler = toBoolean('False');
+                if (isInstructorScheduler) {
+                    rebindScheduler('CourtsScheduler');
+                } else {
+                    if (isMobileLayout) {
+                        rebindScheduler('CourtsScheduler');
+                    }
+                }
+            }
+        } else {
+            enableButtonsByClass('btn-submit');
+            if (result.isMessage) {
+                swalSettings().fire({
+                    title: "﻿﻿Reservation Notice",
+                    html: result.message,
+                    icon: "error"
+                });
+            } else {
+                jQuery("#createReservation-Form-container").replaceHtml(result.data);
+                removeFirstMobileModalFromArray();
+            }
+            var isConsolidated = toBoolean('False');
+            if (isConsolidated) {
+                rebindSchedulerWithRefresh("ConsolidatedScheduler");
+            }
+        }
+    }
+
+    function submitCreateReservationForm() {
+        var ids = [];
+
+        if ($("#DisclosureAgree")[0]) {
+            //require disclosure
+            if (!$("#DisclosureAgree").is(":checked")) {
+                var name = $("#DisclosureName").val();
+                pNotify('Error', "In order to complete your registration you need to agree to the following disclosure: " + name);
+                return;
+            }
+        }
+
+        $.each(selectedMembers,
+            function(index, member) {
+                ids.push(member.MemberId);
+            });
+        $("#MemberIds").val(ids.join());
+
+        var isValidForm = true;
+        $('.required-input').each(function () {
+
+            if ($(this).val() == '' || $(this).val() == 'null') {
+                isValidForm = false;
+                $(this).addClass("input-validation-error");
+            } else {
+                $(this).removeClass("input-validation-error");
+            }
+        });
+
+        if (isValidForm) {
+            var form = jQuery("#createReservation-Form");
+
+            if (form.valid()) {
+                $("#createReservation-Form").submit();
+
+                submitIntervalId = setInterval(addSlowSubmitMessageWithSpinner, 10000);
+            }
+        } else {
+            var showGlobalError = true;
+            $('.required-input').each(function () {
+
+                if ($(this).val() == '' || $(this).val() == 'null') {
+                    var errorMessage = $(this).data('errormessage');
+
+                    if (errorMessage) {
+                        showGlobalError = false;
+                        pNotify('Error', errorMessage);
+                        return false;
+                    }
+                }
+            });
+
+            if (showGlobalError) {
+                pNotify('Error', "Fill all required fields.");
+            }
+        }
+    }
+
+    function addSlowSubmitMessageWithSpinner() {
+        $('.modal-body').addClass('no-overflow');
+        createSpinner(`#createReservation-Form-container`, true, true, '<h4 style="padding-top: 14px;font-weight: 500;">Sorry for the delay in creating your reservation.</h4>', true, true);
+    }
+
+    $(document).on('click', 'button[type="reset"]', function () {
+        clearInterval(submitIntervalId);
+        try {
+            $('.modal-body').removeClass('no-overflow');
+            $(`#createReservation-Form-container .spinner-container.active`).remove();
+        } catch (e) {
+
+        }
+    });
+
+    $(function () {
+        if ($("#ReservationOpenTimeDispplay")[0]) {
+            $(".modal-header-container").append("<span class='reservation-open-time-container'><p class='display-open-time'></p></span>");
+        }
+    })
+</script>

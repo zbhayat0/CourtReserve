@@ -22,7 +22,7 @@ class Logger:
         self.logger.addHandler(fh)
 
         # logging to console
-        sh = rich.logging.RichHandler(markup=True, rich_tracebacks=True)
+        sh = rich.logging.RichHandler(markup=False, rich_tracebacks=True)
         sh.setLevel(logging.INFO)
         self.logger.addHandler(sh)
 

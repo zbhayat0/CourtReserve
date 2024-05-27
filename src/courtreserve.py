@@ -1,11 +1,14 @@
 from requests import Session
+from time import sleep
 from bs4 import BeautifulSoup
 from urllib.parse import unquote
-from src.logger import Logger
+from .logger import Logger
 from traceback import format_exc
 from pytz import timezone
 from datetime import datetime, timedelta, time
 from enum import Enum
+from .database import Reservation, db
+from telebot import TeleBot
 
 
 # UTC Timezone
@@ -30,11 +33,11 @@ class Location(Enum):
 
     @property
     def court_type(self) -> str:
-        return self.value.split(" - ")[0]
+        return self.value
 
     @property
     def court_label(self) -> str:
-        return self.value
+        return self.value.split(" - ")[1]
 
 
 LOCATION_NAME_TO_ID_MAPPING = {
@@ -46,6 +49,7 @@ LOCATION_NAME_TO_ID_MAPPING = {
     Location.PICKLEBALL_2B.value: 46169
 }
 
+LOCATION_ID_TO_NAME_MAPPING = {v: k for k, v in LOCATION_NAME_TO_ID_MAPPING.items()}
 
 def get_available_hours():
     return [(time(hour, 0), time(hour+1, 0)) for hour in range(OPEN, CLOSE + 1)]
@@ -71,6 +75,7 @@ class ReserveBot:
         self.logger   = Logger('api_courtreserve')
         self.is_setup = False
         self.zone = timezone(TIME_ZONE)
+        self.bot: TeleBot
 
     def _get(self, url, *args, **kwargs):
         res = None
@@ -80,9 +85,6 @@ class ReserveBot:
             return res
         except Exception:
             self.logger.error(format_exc())
-        finally:
-            if res:
-                self.logger.info(res.text)
     
     def _post(self, url, *args, **kwargs):
         res = None
@@ -92,9 +94,6 @@ class ReserveBot:
             return res
         except Exception:
             self.logger.error(format_exc())
-        finally:
-            if res:
-                self.logger.info(res.text)
 
 
     def setup(self):
@@ -146,6 +145,9 @@ class ReserveBot:
 
     def create_reservation(self, url):
         res = self._get(url)
+        with open('res.html', 'wb') as f:
+            f.write(res.content)
+
         soup = BeautifulSoup(res.text, "html.parser")
 
         return {
@@ -262,3 +264,37 @@ class ReserveBot:
         return reservation
 
 
+    def worker(self):
+        while True:
+            # only run this at 11AM UTC -15 seconds to be safe
+            now = datetime.now(tz=self.zone)
+
+            if (remainder:=abs(now - datetime(now.year, now.month, now.day, 11, 0, 0, tzinfo=self.zone))) < timedelta(seconds=15):
+                for reservation in db.all():
+                    is_reserved = False
+
+                    for court in [Location.PICKLEBALL_2A, Location.PICKLEBALL_1A]:
+                        if is_reserved:
+                            break
+
+                        for offset in [timedelta(hours=0), timedelta(hours=1)]:
+                            try:
+                                resrv = self.reserve(reservation.date+offset, court=court)
+                                if resrv and resrv["isValid"]:
+                                    db.delete(reservation)
+                                    is_reserved = True
+                                    break
+                            except Exception:
+                                self.logger.error(format_exc())
+                    
+                    if not is_reserved:
+                        self.logger.error(f"Failed to reserve {reservation.date}")
+            
+            self.logger.info(f"Sleeping for {remainder.total_seconds()} seconds")
+            sleep(max(remainder.total_seconds()-5, 0.1))
+
+
+
+if __name__ == "__main__":
+    bot = ReserveBot()
+    bot.worker()
