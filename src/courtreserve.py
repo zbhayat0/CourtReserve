@@ -265,6 +265,7 @@ class ReserveBot:
 
 
     def worker(self):
+        self.logger.info("reserver bot worker is running...")
         while True:
             # only run this at 11AM UTC -15 seconds to be safe
             now = datetime.now(tz=self.zone)

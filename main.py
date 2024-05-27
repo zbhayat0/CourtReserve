@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from pytz import timezone
 from telebot import TeleBot
@@ -9,6 +9,7 @@ from src.courtreserve import (TIME_ZONE, ReserveBot, get_available_days, Locatio
 from src.database import Reservation, db
 from src.logger import Logger
 import typing
+from threading import Thread
 
 
 bot = TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk")
@@ -185,5 +186,9 @@ def remove_reservation(call):
 
 if __name__ == "__main__":
     logger.info("Starting the bot")
+    res_bot = ReserveBot()
+    res_bot.bot = bot
+
+    Thread(target=res_bot.worker, daemon=True).start()
     bot.infinity_polling()
 
