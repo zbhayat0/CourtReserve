@@ -184,11 +184,26 @@ def remove_reservation(call):
     back(call)
 
 
+@bot.message_handler(commands=["logs"])
+@errorsWrapper(logger)
+def logs(message):
+    import os
+    log_files = os.listdir("logs")
+
+    if not log_files:
+        bot.send_message(message.chat.id, "No logs found")
+        return
+
+    for log in log_files:
+        with open(f"logs/{log}") as f:
+            bot.send_document(message.chat.id, f)
+    
+
 if __name__ == "__main__":
     logger.info("Starting the bot")
     res_bot = ReserveBot()
     res_bot.bot = bot
 
     Thread(target=res_bot.worker, daemon=True).start()
-    bot.infinity_polling()
+    bot.infinity_polling(timeout=10, long_polling_timeout=5)
 
