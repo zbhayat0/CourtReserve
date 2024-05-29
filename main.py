@@ -195,9 +195,12 @@ def logs(message):
         return
 
     for log in log_files:
-        with open(f"logs/{log}") as f:
-            bot.send_document(message.chat.id, f)
-    
+        try:
+            with open(f"logs/{log}") as f:
+                bot.send_document(message.chat.id, f)
+        except:
+            # file is empty or anything else
+            pass
 
 if __name__ == "__main__":
     logger.info("Starting the bot")
