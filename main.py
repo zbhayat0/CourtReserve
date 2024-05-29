@@ -4,7 +4,7 @@ from pytz import timezone
 from telebot import TeleBot
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from src.courtreserve import (TIME_ZONE, ReserveBot, get_available_days, Location, LOCATION_ID_TO_NAME_MAPPING,
+from src.courtreserve import (TIME_ZONE, ReserveBot, get_available_days, Location, LOCATION_ID_TO_LOCATION_MAPPING,
                               get_available_hours)
 from src.database import Reservation, db
 from src.logger import Logger
@@ -68,7 +68,7 @@ class Menu:
     def view_reservations_menu(reservations: list[Reservation]):
         markup = InlineKeyboardMarkup()
         for n, reservation in enumerate(reservations):
-            court = LOCATION_ID_TO_NAME_MAPPING[int(reservation.court_id)].split("-")[1].strip()
+            court = LOCATION_ID_TO_LOCATION_MAPPING[int(reservation.court_id)].value.split("-")[1].strip()
             markup.add(InlineKeyboardButton(f"{n+1}. {court} On {reservation.date.strftime('%B %d %H:%M')}", callback_data=f"rsrv_{reservation.key}"))
 
         markup.add(InlineKeyboardButton("🔙 Back", callback_data="back.admin"))
@@ -126,7 +126,7 @@ def new_reservation_court(call):
         return
 
     queue[call.message.chat.id].update(court=court)
-    bot.edit_message_text(f"Please select a time for {date.strftime('%B %d')} at {LOCATION_ID_TO_NAME_MAPPING[int(court)]}", call.message.chat.id, call.message.id, reply_markup=Menu.new_reservation_hours_menu())
+    bot.edit_message_text(f"Please select a time for {date.strftime('%B %d')} at {LOCATION_ID_TO_LOCATION_MAPPING[int(court)].value}", call.message.chat.id, call.message.id, reply_markup=Menu.new_reservation_hours_menu())
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("hour_"))
@@ -143,7 +143,7 @@ def book_reservation(call):
         bot.answer_callback_query(call.id, "⚠️ Reservation already exists", show_alert=True)
         return
 
-    msg = f"✅ Reservation for {LOCATION_ID_TO_NAME_MAPPING[int(court)]} created on {reservation.date.strftime('%B %d %H:%M')}" 
+    msg = f"✅ Reservation for {LOCATION_ID_TO_LOCATION_MAPPING[int(court)].value} created on {reservation.date.strftime('%B %d %H:%M')}" 
     bot.answer_callback_query(call.id, msg, show_alert=True)
     bot.send_message(call.message.chat.id, msg+"\nThe bot will book the court automatically once it becomes available")
 
