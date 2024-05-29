@@ -33,12 +33,12 @@ class Location(Enum):
 
     @property
     def court_type(self) -> str:
-        return self.value
+        return self.value.split(" - ")[1].split(" ")[0] # Pickleball/Tennis
 
     @property
     def court_label(self) -> str:
         return self.value.split(" - ")[1]
-
+    
 
 LOCATION_NAME_TO_ID_MAPPING = {
     Location.HARD_TENNIS_1.value: 46164,
@@ -49,7 +49,8 @@ LOCATION_NAME_TO_ID_MAPPING = {
     Location.PICKLEBALL_2B.value: 46169
 }
 
-LOCATION_ID_TO_NAME_MAPPING = {v: k for k, v in LOCATION_NAME_TO_ID_MAPPING.items()}
+LOCATION_ID_TO_LOCATION_MAPPING = {v: Location(k) for k, v in LOCATION_NAME_TO_ID_MAPPING.items()}
+
 
 def get_available_hours():
     return [(time(hour, 0), time(hour+1, 0)) for hour in range(OPEN, CLOSE + 1)]
@@ -67,6 +68,24 @@ def get_available_days() -> list[datetime]:
     days.append(today + timedelta(days=4))
 
     return days
+
+
+def planB_court(court: Location, date: datetime):
+    # return two lists
+    # current court + another alternative court of the same type (PICKLEBALL_1A, PICKLEBALL_1B) or (PICKLEBALL_2A, PICKLEBALL_2B) or (HARD_TENNIS_1, HARD_TENNIS_2)
+    # current date + current date + 1 hour
+
+    dates = [date, date + timedelta(hours=1)]
+    courts = [court]
+    court_type = court.court_type
+    
+    while len(courts) < 2:
+        for _court in Location:
+            if _court.court_type == court_type and _court != court:
+                courts.append(_court)
+                break
+    
+    return list(zip(dates, courts))
 
 
 class ReserveBot:
@@ -145,9 +164,6 @@ class ReserveBot:
 
     def create_reservation(self, url):
         res = self._get(url)
-        with open('res.html', 'wb') as f:
-            f.write(res.content)
-
         soup = BeautifulSoup(res.text, "html.parser")
 
         return {
@@ -249,7 +265,7 @@ class ReserveBot:
         is_today = date.date() == datetime.now(tz=self.zone).date()
 
         court_label = court.court_label
-        court_type = court.court_type
+        court_type = court.value
         court_id = str(court.id)
         
         if not self.is_setup:
@@ -272,23 +288,28 @@ class ReserveBot:
 
             if (remainder:=abs(now - datetime(now.year, now.month, now.day, 11, 0, 0, tzinfo=self.zone))) < timedelta(seconds=15):
                 for reservation in db.all():
+                    reservation: Reservation
+                    court: Location
+                    
+                    if reservation.date.date() != (now + timedelta(days=2)).date():
+                        # we can only reserve two days in advance
+                        continue
+
                     is_reserved = False
 
-                    for court in [Location.PICKLEBALL_2A, Location.PICKLEBALL_1A]:
+                    for court, court_date in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[reservation.court_id], reservation.date):
                         if is_reserved:
                             break
-
-                        for offset in [timedelta(hours=0), timedelta(hours=1)]:
-                            try:
-                                resrv = self.reserve(reservation.date+offset, court=court)
-                                if resrv and resrv["isValid"]:
-                                    self.bot.send_message(6874076639, f"✅ Succesfully reserved {reservation.date} at {court.court_label}")
-                                    self.bot.send_message(942683545, f"✅ Succesfully reserved {reservation.date} at {court.court_label}") # notify the dev/ delete after testing
-                                    db.delete(reservation)
-                                    is_reserved = True
-                                    break
-                            except Exception:
-                                self.logger.error(format_exc())
+                        try:
+                            resrv = self.reserve(date=court_date, court=court)
+                            if resrv and resrv["isValid"]:
+                                self.bot.send_message(6874076639, f"✅ Succesfully reserved {reservation.date} at {court.court_label}")
+                                self.bot.send_message(942683545, f"✅ Succesfully reserved {reservation.date} at {court.court_label}") # notify the dev/ delete after testing
+                                db.delete(reservation)
+                                is_reserved = True
+                                break
+                        except Exception:
+                            self.logger.error(format_exc())
                     
                     if not is_reserved:
                         self.logger.error(f"Failed to reserve {reservation.date}")
