@@ -70,7 +70,7 @@ def get_available_days() -> list[datetime]:
     return days
 
 
-def planB_court(court: Location, date: datetime):
+def planB_court(court: Location, date: datetime) -> list[tuple[datetime, Location]]:
     # return two lists
     # current court + another alternative court of the same type (PICKLEBALL_1A, PICKLEBALL_1B) or (PICKLEBALL_2A, PICKLEBALL_2B) or (HARD_TENNIS_1, HARD_TENNIS_2)
     # current date + current date + 1 hour
@@ -87,6 +87,9 @@ def planB_court(court: Location, date: datetime):
     
     return list(zip(dates, courts))
 
+
+class ExceededReservationTime(Exception):
+    pass
 
 class ReserveBot:
     def __init__(self):
@@ -165,6 +168,9 @@ class ReserveBot:
     def create_reservation(self, url):
         res = self._get(url)
         soup = BeautifulSoup(res.text, "html.parser")
+
+        if "restricted to 180 minute" in soup.text.lower():
+            raise ExceededReservationTime("Reservation restricted to 180 minutes")
 
         return {
             "__RequestVerificationToken": soup.find("input", {"name": "__RequestVerificationToken"}).get("value"),
@@ -273,14 +279,17 @@ class ReserveBot:
             self.is_setup = True
         
         url = self.create_reservation_url(start, end, court_label)
-        keys = self.create_reservation(url)
+        try:
+            keys = self.create_reservation(url)
+        except ExceededReservationTime:
+            return {"isValid": False, "message": "Reservation restricted to 180 minutes"}
 
         reservation = self.reserve_court(keys, _date, court_type, _date.split(" ")[1], is_today, court_id)
         self.logger.info(reservation)
         return reservation
 
 
-    def worker(self):
+    def worker(self, r):
         self.logger.info("reserver bot worker is running...")
         while True:
             # only run this at 11AM UTC -15 seconds to be safe
@@ -291,13 +300,17 @@ class ReserveBot:
                     reservation: Reservation
                     court: Location
                     
+                    if reservation.date.date() <= now.date():
+                        db.delete(reservation)
+                        self.logger.info(f"Deleted reservation {reservation.date}")
+                        continue
+
                     if reservation.date.date() != (now + timedelta(days=2)).date():
-                        # we can only reserve two days in advance
                         continue
 
                     is_reserved = False
 
-                    for court, court_date in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[reservation.court_id], reservation.date):
+                    for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[reservation.court_id], reservation.date):
                         if is_reserved:
                             break
                         try:
@@ -308,6 +321,8 @@ class ReserveBot:
                                 db.delete(reservation)
                                 is_reserved = True
                                 break
+                            else:
+                                self.bot.send_message(942683545, f"Error while reserving {reservation.date} at {court.court_label}:\n{resrv.get('message', '')}")
                         except Exception:
                             self.logger.error(format_exc())
                     
@@ -321,4 +336,7 @@ class ReserveBot:
 
 if __name__ == "__main__":
     bot = ReserveBot()
-    bot.worker()
+    bot.bot = TeleBot("7074521794:AAGjtkEd2uuuwPTWW7cwVAsr0ZmVgwPq4Zk")
+    # bot.worker()
+    r = [Reservation(date=datetime(2024, 6, 2, 11, tzinfo=timezone(TIME_ZONE)), court_id=Location.PICKLEBALL_2B.id)]
+    bot.worker(r)
