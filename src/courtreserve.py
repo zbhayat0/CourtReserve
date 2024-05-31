@@ -334,7 +334,4 @@ class ReserveBot:
 
 if __name__ == "__main__":
     bot = ReserveBot()
-    bot.bot = TeleBot("7074521794:AAGjtkEd2uuuwPTWW7cwVAsr0ZmVgwPq4Zk")
-    # bot.worker()
-    r = [Reservation(date=datetime(2024, 6, 2, 11, tzinfo=timezone(TIME_ZONE)), court_id=Location.PICKLEBALL_2B.id)]
-    bot.worker(r)
+    bot.worker()
