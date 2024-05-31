@@ -1,15 +1,17 @@
-from requests import Session
-from time import sleep
-from bs4 import BeautifulSoup
-from urllib.parse import unquote
-from .logger import Logger
-from traceback import format_exc
-from pytz import timezone
-from datetime import datetime, timedelta, time
+import json
+from datetime import datetime, time, timedelta
 from enum import Enum
-from .database import Reservation, db
+from time import sleep
+from traceback import format_exc
+from urllib.parse import unquote
+
+from bs4 import BeautifulSoup
+from pytz import timezone
+from requests import Session
 from telebot import TeleBot
 
+from .database import Reservation, db
+from .logger import Logger
 
 # UTC Timezone
 TIME_ZONE = "UTC"
@@ -69,7 +71,6 @@ def get_available_days() -> list[datetime]:
 
     return days
 
-
 def planB_court(court: Location, date: datetime) -> list[tuple[datetime, Location]]:
     # return two lists
     # current court + another alternative court of the same type (PICKLEBALL_1A, PICKLEBALL_1B) or (PICKLEBALL_2A, PICKLEBALL_2B) or (HARD_TENNIS_1, HARD_TENNIS_2)
@@ -87,6 +88,10 @@ def planB_court(court: Location, date: datetime) -> list[tuple[datetime, Locatio
     
     return list(zip(dates, courts))
 
+def load_credentials(acc):
+    with open(f"creds/{acc}.json") as f:
+        return json.load(f)
+
 
 class ExceededReservationTime(Exception):
     pass
@@ -95,7 +100,6 @@ class ReserveBot:
     def __init__(self):
         self.session  = Session()
         self.logger   = Logger('api_courtreserve')
-        self.is_setup = False
         self.zone = timezone(TIME_ZONE)
         self.bot: TeleBot
 
@@ -118,14 +122,9 @@ class ReserveBot:
             self.logger.error(format_exc())
 
 
-    def setup(self):
-        cookies = {
-            'ASP.NET_SessionId': 'bcnynxy1syh0xkb1my2fkw1p',
-            '_hjSessionUser_839874': 'eyJpZCI6ImM3ZjQ0MGY4LTQ4NWItNTI4OC04MTBjLWQ1YjRmYjZkNTlhNyIsImNyZWF0ZWQiOjE3MTYwMDg0NjY1NDMsImV4aXN0aW5nIjp0cnVlfQ==',
-            '.AspNet.ApplicationCookie': 'WavzJicPGJ2y8Y-fqMOW0H41V1uvpll3Q3jQDUEBOpkQFW592_K4fDeG2g9NTXwnMOCOZ3QZIi3JQaOuzixeMpwZ0h_Apq4wDJuMhalYZOSFeTt6VFv-MmqMRlEdw1xgXs6lLPk4MZclWaGif3PscTtl1-63cL6-rTM59z1KfmKbV7fYsIjslmaem7vtAhtey_cz3Q4-9L6klnTd8ElOYp1SXG2ij9Npl8GVJyKnIRYXtVMeZ_G1U7gN4OcDjB9ydOi_9ulUL4cHwca0LRr44q7MF90Cf8EnVHr1ESnsTMHEDzGV7tDN0Lrp2gW5Oq4yYInQGj18dhmlC0aUXzraqjg5LNCuph0L_3nRJAhbz270SbcgFMZJlMoYws3ZutYWG-b7OKrpIo4krh8C-quN6ZAGOoocu4LreLoiKSOH7aLC-iaAdSEmoKtWaX7pHvyXbBYRfJUXXWngNSGIN0fLXhqO_g7ouAOT1W6SZ5eYjU8ad3f0-JJzUqGN6s4oDyCEBHwAWDR6f2t-_lUeFordpXfSD9gF8kaxhbKcHq_MQ-RviUIz',
-            'InternalCalendarDate': '5%2F24%2F2024',
-            'IsPayNowVisible': 'false',
-        }
+    def setup(self, creds: dict):
+        self.session.cookies.clear()
+        self.session.headers.clear()
 
         headers = {
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -145,9 +144,9 @@ class ReserveBot:
         }
 
         self.session.headers.update(headers)
-        self.session.cookies.update(cookies)
+        self.session.cookies.update(creds)
 
-        res = self._get('https://app.courtreserve.com/Online/Reservations/Index/12207', headers=headers, cookies=cookies)
+        res = self._get('https://app.courtreserve.com/Online/Reservations/Index/12207', headers=headers)
 
         return unquote(res.text.split("OrganizationMemberFavoriteApi")[1].split("requestData=")[1].split("&")[0]).strip()
 
@@ -249,7 +248,7 @@ class ReserveBot:
         return res.json() # check for isValid = True
 
 
-    def reserve(self, date: datetime, court: Location):
+    def reserve(self, date: datetime, court: Location, acc: str):
         # date = '5/24/2024 12:00:00 AM'
 
         # court_type = 'Pickleball - Pickleball 2A' or 'Hard - Tennis Court #2
@@ -274,9 +273,8 @@ class ReserveBot:
         court_type = court.value
         court_id = str(court.id)
         
-        if not self.is_setup:
-            self.setup()
-            self.is_setup = True
+        creds = load_credentials(acc)
+        self.setup(creds=creds)
         
         url = self.create_reservation_url(start, end, court_label)
         try:
@@ -289,7 +287,7 @@ class ReserveBot:
         return reservation
 
 
-    def worker(self, r):
+    def worker(self):
         self.logger.info("reserver bot worker is running...")
         while True:
             # only run this at 11AM UTC -15 seconds to be safe
@@ -314,7 +312,7 @@ class ReserveBot:
                         if is_reserved:
                             break
                         try:
-                            resrv = self.reserve(date=court_date, court=court)
+                            resrv = self.reserve(date=court_date, court=court, acc=reservation.acc)
                             if resrv and resrv["isValid"]:
                                 self.bot.send_message(6874076639, f"✅ Succesfully reserved {reservation.date} at {court.court_label}")
                                 self.bot.send_message(942683545, f"✅ Succesfully reserved {reservation.date} at {court.court_label}") # notify the dev/ delete after testing

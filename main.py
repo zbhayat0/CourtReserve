@@ -22,10 +22,18 @@ class Menu:
     @staticmethod
     def admin():
         markup = InlineKeyboardMarkup()
-        markup.add(InlineKeyboardButton("➕ New Reservation", callback_data="new_reservation"))
+        markup.add(InlineKeyboardButton("➕ New Reservation", callback_data="choose_acc"))
         markup.add(InlineKeyboardButton("📅 Scheduled Reservations", callback_data="view_reservations"))
         return markup
 
+    @staticmethod
+    def choose_acc_menu():
+        markup = InlineKeyboardMarkup()
+        markup.add(InlineKeyboardButton("Zafar", callback_data="cred_zafar"))
+        markup.add(InlineKeyboardButton("Mike", callback_data="cred_mike"))
+        markup.add(InlineKeyboardButton("🔙 Back", callback_data="back.admin"))
+        
+        return markup
 
     @staticmethod
     def new_reservation_menu():
@@ -34,7 +42,7 @@ class Menu:
         for day in days:
             markup.add(InlineKeyboardButton(day.strftime("%B %d"), callback_data=f"day_{day.strftime('%Y/%m/%d')}"))
         
-        markup.add(InlineKeyboardButton("🔙 Back", callback_data="back.admin"))
+        markup.add(InlineKeyboardButton("🔙 Back", callback_data="back.acc"))
         return markup
 
     @staticmethod
@@ -69,7 +77,7 @@ class Menu:
         markup = InlineKeyboardMarkup()
         for n, reservation in enumerate(reservations):
             court = LOCATION_ID_TO_LOCATION_MAPPING[int(reservation.court_id)].value.split("-")[1].strip()
-            markup.add(InlineKeyboardButton(f"{n+1}. {court} On {reservation.date.strftime('%B %d %H:%M')}", callback_data=f"rsrv_{reservation.key}"))
+            markup.add(InlineKeyboardButton(f"{n+1}. [{reservation.acc}] {court} On {reservation.date.strftime('%B %d %H:%M')}", callback_data=f"rsrv_{reservation.key}"))
 
         markup.add(InlineKeyboardButton("🔙 Back", callback_data="back.admin"))
         return markup
@@ -95,6 +103,8 @@ def back(call):
 
     if page == "days":
         menu = Menu.new_reservation_menu
+    elif page == "acc":
+        menu = Menu.choose_acc_menu
     else:
         menu = Menu.admin
 
@@ -104,15 +114,21 @@ def back(call):
         bot.edit_message_reply_markup(call.message.chat.id, call.message.id, reply_markup=menu())
 
 
-@bot.callback_query_handler(func=lambda call: call.data == "new_reservation")
-def new_reservation(call):
+@bot.callback_query_handler(func=lambda call: call.data == "choose_acc")
+def choose_acc(call):
+    bot.edit_message_text("Please select an account", call.message.chat.id, call.message.id, reply_markup=Menu.choose_acc_menu())
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("cred_"))
+def choose_acc(call):
+    queue.setdefault(call.message.chat.id, {}).update(account=call.data.split("_")[1])
     bot.edit_message_text("Please select a day", call.message.chat.id, call.message.id, reply_markup=Menu.new_reservation_menu())
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("day_"))
 def new_reservation_day(call):
     date = datetime.strptime(call.data.split("_")[1], "%Y/%m/%d")
-    queue.setdefault(call.message.chat.id, {}).update(date=date)
+    queue[call.message.chat.id].update(date=date)
     
     bot.edit_message_text(f"Please select a court for {date.strftime('%B %d')}", call.message.chat.id, call.message.id, reply_markup=Menu.courts_menu())
 
@@ -134,10 +150,13 @@ def book_reservation(call):
     hours = call.data.split("_")[1]
     start, end = map(int, hours.split(":"))
     
+    acc = queue.get(call.message.chat.id, {}).get("account")
     date = queue.get(call.message.chat.id, {}).get("date")
     court = queue.get(call.message.chat.id, {}).get("court")
+    
+    del queue[call.message.chat.id]
 
-    reservation = Reservation(date=date.replace(hour=start, tzinfo=timezone(TIME_ZONE)), court_id=court)
+    reservation = Reservation(acc=acc, date=date.replace(hour=start, tzinfo=timezone(TIME_ZONE)), court_id=court)
 
     if not db.add(reservation):
         bot.answer_callback_query(call.id, "⚠️ Reservation already exists", show_alert=True)

@@ -2,7 +2,7 @@ import functools
 import traceback
 from .logger import Logger
 
-SUDO = [6874076639, 942683545]
+SUDO = [6874076639, 942683545, 7278960247]
 
 
 def errorsWrapper(logger: Logger=None):
