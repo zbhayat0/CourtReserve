@@ -5,6 +5,7 @@ from threading import RLock
 from .logger import Logger
 
 from datetime import datetime
+from time import time
 
 
 class Reservation:
@@ -40,10 +41,18 @@ class Database:
     def __init__(self):
         self.deta = deta.Deta("c0ohpvveq8j_eRdsBCee8K9nNZ5EeiWw4DTkHXM4QkXp")
         self.base = self.deta.Base("courtreserve-key")
+        self.base_age = time()
+
         self.logger = Logger('database')
         self.lock = RLock()
 
+    def _base(self):
+        if self.base_age + 5*60 < time():
+            self.base_age = time()
+            self.base = self.deta.Base("courtreserve-key")
+
     def _fetch(self, date: datetime, court_id: str, acc: str):
+        self._base()
         if isinstance(date, datetime):
             date = date.isoformat()
 
@@ -53,11 +62,13 @@ class Database:
             return Reservation(key=res[0]["key"], date=res[0]["date"], court_id=res[0]["court_id"], created_at=res[0]["created_at"])
 
     def _get(self, key: str):
+        self._base()
         res = self.base.get(key)
         if res:
             return Reservation(key=res["key"], date=res["date"], court_id=res["court_id"], created_at=res["created_at"])
 
     def _add(self, reservation: Reservation):
+        self._base()
         try:
             # although insert throws an error if the key already exists, we still check if the key exists
             # to avoid adding the same reservation twice
@@ -85,6 +96,7 @@ class Database:
             return self._add(reservation)
 
     def delete(self, obj: Reservation):
+        self._base()
         if isinstance(obj, Reservation):
             if not obj.key:
                 obj = self.fetch(obj.date, obj.court_id, obj.acc)
@@ -94,6 +106,7 @@ class Database:
                 self.base.delete(obj.key)
 
     def all(self):
+        self._base()
         with self.lock:
             items = self.base.fetch().items
         return [Reservation(**res) for res in items]
