@@ -51,12 +51,16 @@ class Database:
             self.base_age = time()
             self.base = self.deta.Base("courtreserve-key")
 
-    def _fetch(self, date: datetime, court_id: str, acc: str):
+    def _fetch(self, date: datetime, court_id: str, acc: str = ''):
         self._base()
         if isinstance(date, datetime):
             date = date.isoformat()
 
-        res = self.base.fetch({"date": date, "court_id": court_id, "acc": acc}).items
+        if acc:
+            res = self.base.fetch({"date": date, "court_id": court_id, "acc": acc}).items
+        else:
+            res = self.base.fetch({"date": date, "court_id": court_id}).items
+
         if res:
             # assuming there is only one reservation per date; should be secured by the add logic
             return Reservation(key=res[0]["key"], date=res[0]["date"], court_id=res[0]["court_id"], created_at=res[0]["created_at"])
@@ -73,7 +77,7 @@ class Database:
             # although insert throws an error if the key already exists, we still check if the key exists
             # to avoid adding the same reservation twice
 
-            res = self._fetch(reservation.date, reservation.court_id, reservation.acc)
+            res = self._fetch(reservation.date, reservation.court_id)
             if res:
                 return False
 
@@ -88,7 +92,7 @@ class Database:
 
     def fetch(self, date:datetime, court_id:str, acc: str):
         with self.lock:
-            return self._fetch(date, court_id)
+            return self._fetch(date, court_id, acc)
     
     def add(self, reservation: Reservation):
         # base.insert throws an error if the key already exists
