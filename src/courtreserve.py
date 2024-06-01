@@ -308,7 +308,7 @@ class ReserveBot:
 
                     is_reserved = False
 
-                    for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[reservation.court_id], reservation.date):
+                    for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[int(reservation.court_id)], reservation.date):
                         if is_reserved:
                             break
                         try:
