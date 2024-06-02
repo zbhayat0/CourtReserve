@@ -54,6 +54,26 @@ LOCATION_NAME_TO_ID_MAPPING = {
 LOCATION_ID_TO_LOCATION_MAPPING = {v: Location(k) for k, v in LOCATION_NAME_TO_ID_MAPPING.items()}
 
 
+zafar_details = {
+    'member_id': '5663355',
+    'org_member_id': '4442712',
+    'first_name': 'Zafar',
+    'last_name': 'Bhayat',
+    'email': 'zbhayat0@gmail.com',
+    'membership_number': '1138'
+
+}
+
+michael_details = {
+    'member_id': '5663625',
+    'org_member_id': '4443056',
+    'first_name': 'Michael',
+    'last_name': 'Buffolino',
+    'email': 'michaelbuffolino1@gmail.com',
+    'membership_number': '1159'
+}
+
+
 def get_available_hours():
     return [(time(hour, 0), time(hour+1, 0)) for hour in range(OPEN, CLOSE + 1)]
 
@@ -177,7 +197,7 @@ class ReserveBot:
         }
 
 
-    def reserve_court(self, keys, date: str, court_type: str, start_time: str, is_today: bool, court_id: str):
+    def reserve_court(self, member: dict, keys: dict, date: str, court_type: str, start_time: str, is_today: bool, court_id: str):
         # date = '5/24/2024 12:00:00 AM'
         # court_type = 'Pickleball - Pickleball 2A'
         # start_time = '12:00:00'
@@ -190,7 +210,7 @@ class ReserveBot:
         ('__RequestVerificationToken', keys["__RequestVerificationToken"]),
         ('Id', '12207'),
         ('OrgId', '12207'),
-        ('MemberId', '5663355'),
+        ('MemberId', member["member_id"]),
         ('IsConsolidatedScheduler', 'False'),
         ('HoldTimeForReservation', '15'),
         ('RequirePaymentWhenBookingCourtsOnline', 'False'),
@@ -232,13 +252,13 @@ class ReserveBot:
         ('CourtId', court_id), # the court type id ig
         ('OwnersDropdown_input', ''),
         ('OwnersDropdown', ''),
-        ('SelectedMembers[0].OrgMemberId', '4442712'),
-        ('SelectedMembers[0].MemberId', '5663355'),
+        ('SelectedMembers[0].OrgMemberId', member["org_member_id"]),
+        ('SelectedMembers[0].MemberId', member["member_id"]),
         ('SelectedMembers[0].OrgMemberFamilyId', ''),
-        ('SelectedMembers[0].FirstName', 'Zafar'),
-        ('SelectedMembers[0].LastName', 'Bhayat'),
-        ('SelectedMembers[0].Email', 'zbhayat0@gmail.com'),
-        ('SelectedMembers[0].MembershipNumber', '1138'),
+        ('SelectedMembers[0].FirstName', member['first_name']),
+        ('SelectedMembers[0].LastName', member['last_name']),
+        ('SelectedMembers[0].Email', member['email']),
+        ('SelectedMembers[0].MembershipNumber', member['membership_number']),
         ('SelectedMembers[0].PaidAmt', ''),
         ('SelectedNumberOfGuests', ''),
         ('X-Requested-With', 'XMLHttpRequest'),
@@ -273,7 +293,13 @@ class ReserveBot:
         court_type = court.value
         court_id = str(court.id)
         
+        if acc == "zafar":
+            member = zafar_details
+        elif acc == "mike":
+            member = michael_details
+
         creds = load_credentials(acc)
+        
         self.setup(creds=creds)
         
         url = self.create_reservation_url(start, end, court_label)
@@ -282,7 +308,7 @@ class ReserveBot:
         except ExceededReservationTime:
             return {"isValid": False, "message": "Reservation restricted to 180 minutes"}
 
-        reservation = self.reserve_court(keys, _date, court_type, _date.split(" ")[1], is_today, court_id)
+        reservation = self.reserve_court(member, keys, _date, court_type, _date.split(" ")[1], is_today, court_id)
         self.logger.info(reservation)
         return reservation
 
