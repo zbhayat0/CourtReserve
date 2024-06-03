@@ -221,6 +221,13 @@ def logs(message):
             # file is empty or anything else
             pass
 
+@bot.message_handler(commands=["next"])
+@errorsWrapper(logger)
+def next_run(message):
+    next_run = res_bot.next_run
+    if next_run:
+        bot.send_message(message.chat.id, f"Next run is on {next_run.strftime('%Y-%m-%d %H:%M:%S')} UTC")
+
 if __name__ == "__main__":
     logger.info("Starting the bot")
     res_bot = ReserveBot()

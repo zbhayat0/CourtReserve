@@ -122,6 +122,7 @@ class ReserveBot:
         self.logger   = Logger('api_courtreserve')
         self.zone = timezone(TIME_ZONE)
         self.bot: TeleBot
+        self.next_run = None
 
     def _get(self, url, *args, **kwargs):
         res = None
@@ -309,12 +310,15 @@ class ReserveBot:
             return {"isValid": False, "message": "Reservation restricted to 180 minutes"}
 
         reservation = self.reserve_court(member, keys, _date, court_type, _date.split(" ")[1], is_today, court_id)
-        self.logger.info(reservation)
+        try:
+            self.logger.info(str(reservation)[:4000], True)
+        except Exception:
+            pass
         return reservation
 
 
     def worker(self):
-        self.logger.info("reserver bot worker is running...")
+        self.logger.info("reserver bot worker is running...", True)
         while True:
             # only run this at 11AM UTC -15 seconds to be safe
             now = datetime.now(tz=self.zone)
@@ -326,7 +330,7 @@ class ReserveBot:
                     
                     if reservation.date.date() <= now.date():
                         db.delete(reservation)
-                        self.logger.info(f"Deleted reservation {reservation.date}")
+                        self.logger.info(f"Deleted reservation {reservation.date}", True)
                         continue
 
                     if reservation.date.date() != (now + timedelta(days=2)).date():
@@ -353,7 +357,8 @@ class ReserveBot:
                     if not is_reserved:
                         self.logger.error(f"Failed to reserve {reservation.date}")
             
-            self.logger.info(f"Sleeping for {remainder.total_seconds()} seconds")
+            self.logger.info(f"Sleeping for {remainder.total_seconds()} seconds", True)
+            self.next_run = now + remainder
             sleep(max(remainder.total_seconds()-5, 0.1))
 
 
