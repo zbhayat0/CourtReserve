@@ -4,3 +4,4 @@ requests
 rich
 bs4
 pytz
+apscheduler
