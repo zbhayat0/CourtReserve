@@ -354,7 +354,8 @@ class ReserveBot:
             
             if not is_reserved:
                 self.logger.error(f"Failed to reserve {reservation.date}")
-
+        self.logger.info("reserver bot worker is done", True)
+        
 
     def worker(self):
         try:

@@ -225,7 +225,7 @@ def logs(message):
 @bot.message_handler(commands=["next"])
 @errorsWrapper(logger)
 def next_run(message):
-    bot.send_message(message.chat.id, f"Next run is on {scheduler.get_job("res_bot.worker").next_run_time} UTC")
+    bot.send_message(message.chat.id, f"Next run is on {scheduler.get_job('res_bot.worker').next_run_time} UTC")
 
 
 if __name__ == "__main__":
