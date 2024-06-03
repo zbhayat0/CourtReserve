@@ -11,6 +11,7 @@ from src.logger import Logger
 from src.tele_handler import errorsWrapper
 import typing
 from threading import Thread
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 
@@ -224,15 +225,17 @@ def logs(message):
 @bot.message_handler(commands=["next"])
 @errorsWrapper(logger)
 def next_run(message):
-    next_run = res_bot.next_run
-    if next_run:
-        bot.send_message(message.chat.id, f"Next run is on {next_run.strftime('%Y-%m-%d %H:%M:%S')} UTC")
+    bot.send_message(message.chat.id, f"Next run is on {scheduler.get_job("res_bot.worker").next_run_time} UTC")
+
 
 if __name__ == "__main__":
     logger.info("Starting the bot")
+    scheduler = BackgroundScheduler(timezone=TIME_ZONE)
     res_bot = ReserveBot()
     res_bot.bot = bot
 
-    Thread(target=res_bot.worker, daemon=True).start()
+    # run res_bot.worker everyday on 11 UTC
+    scheduler.add_job(res_bot.worker, "cron", hour=11, id="res_bot.worker")
+    scheduler.start()
     bot.infinity_polling(timeout=10, long_polling_timeout=5)
 
