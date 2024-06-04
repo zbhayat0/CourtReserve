@@ -235,7 +235,7 @@ if __name__ == "__main__":
     res_bot.bot = bot
 
     # run res_bot.worker everyday on 11 UTC
-    scheduler.add_job(res_bot.worker, "cron", hour=11, id="res_bot.worker")
+    scheduler.add_job(res_bot.worker, "cron", hour=10, minute=59, second=58, id="res_bot.worker")
     scheduler.start()
     bot.infinity_polling(timeout=10, long_polling_timeout=5)
 

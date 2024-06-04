@@ -13,6 +13,8 @@ from telebot import TeleBot
 from .database import Reservation, db
 from .logger import Logger
 
+from concurrent.futures import ThreadPoolExecutor
+
 # UTC Timezone
 TIME_ZONE = "UTC"
 ORG_ID = 12207
@@ -316,44 +318,53 @@ class ReserveBot:
             pass
         return reservation
 
+    def reserve_worker(self, reservation: Reservation, now: datetime):
+        self.logger.info(f"Reserving {reservation.date} for {reservation.acc}", True)
+        if reservation.date.date() <= now.date():
+            db.delete(reservation)
+            self.logger.info(f"Deleted reservation {reservation.date}", True)
+            return
+
+        if reservation.date.date() != (now + timedelta(days=2)).date():
+            self.logger.info(f"Skipping reservation {reservation.date} because it's not two days in advance", True)
+            return
+
+        is_reserved = False
+
+        for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[int(reservation.court_id)], reservation.date):
+            if is_reserved:
+                break
+            try:
+                resrv = self.reserve(date=court_date, court=court, acc=reservation.acc)
+                if resrv and resrv["isValid"]:
+                    self.bot.send_message(6874076639, f"✅ [{reservation.acc}] Succesfully reserved {reservation.date} at {court.court_label}")
+                    self.bot.send_message(942683545, f"✅ [{reservation.acc}] Succesfully reserved {reservation.date} at {court.court_label}") # notify the dev/ delete after testing
+                    db.delete(reservation)
+                    is_reserved = True
+                    break
+                else:
+                    self.bot.send_message(942683545, f"[{reservation.acc}] Error while reserving {reservation.date} at {court.court_label}:\n{resrv.get('message', '')}")
+            except Exception:
+                self.logger.error(format_exc())
+        
+        if not is_reserved:
+            self.logger.error(f"[{reservation.acc}] Failed to reserve {reservation.date}")
 
     def _worker(self):
-        self.logger.info("reserver bot worker is running...", True)
         now = datetime.now(tz=self.zone)
 
-        for reservation in db.all():
-            reservation: Reservation
-            court: Location
+        reservations = db.all()
+        while True:
+            # make sure to only run on 11:00:00 UTC
+            if now.hour == 11: 
+                break
+            sleep(0.01)
+
+        self.logger.info("reserver bot worker is running...", True)
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            for reservation in reservations:
+                executor.submit(self.reserve_worker, reservation, now)
             
-            if reservation.date.date() <= now.date():
-                db.delete(reservation)
-                self.logger.info(f"Deleted reservation {reservation.date}", True)
-                continue
-
-            if reservation.date.date() != (now + timedelta(days=2)).date():
-                self.logger.info(f"Skipping reservation {reservation.date} because it's not two days in advance", True)
-                continue
-
-            is_reserved = False
-
-            for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[int(reservation.court_id)], reservation.date):
-                if is_reserved:
-                    break
-                try:
-                    resrv = self.reserve(date=court_date, court=court, acc=reservation.acc)
-                    if resrv and resrv["isValid"]:
-                        self.bot.send_message(6874076639, f"✅ Succesfully reserved {reservation.date} at {court.court_label}")
-                        self.bot.send_message(942683545, f"✅ Succesfully reserved {reservation.date} at {court.court_label}") # notify the dev/ delete after testing
-                        db.delete(reservation)
-                        is_reserved = True
-                        break
-                    else:
-                        self.bot.send_message(942683545, f"Error while reserving {reservation.date} at {court.court_label}:\n{resrv.get('message', '')}")
-                except Exception:
-                    self.logger.error(format_exc())
-            
-            if not is_reserved:
-                self.logger.error(f"Failed to reserve {reservation.date}")
         self.logger.info("reserver bot worker is done", True)
         
 
