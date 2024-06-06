@@ -124,7 +124,10 @@ class ReserveBot:
         self.logger   = Logger('api_courtreserve')
         self.zone = timezone(TIME_ZONE)
         self.bot: TeleBot
-        self.next_run = None
+        if (now:=datetime.now(tz=self.zone)).hour < 11:
+            self.next_run = now.replace(hour=11, minute=0, second=0, microsecond=0)
+        else:
+            self.next_run = now.replace(hour=11, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
     def _get(self, url, *args, **kwargs):
         res = None
@@ -344,17 +347,11 @@ class ReserveBot:
         else: # if no reservation was made
             self.logger.error(f"[{reservation.acc}] Failed to reserve {reservation.date}")
 
+
     def _worker(self):
         now = datetime.now(tz=self.zone)
 
         reservations = db.all()
-        while True:
-            # make sure to only run on 11:00:00 UTC
-            if now.hour == 11: 
-                break
-            sleep(0.01)
-
-        self.logger.info("reserver bot worker is running...", True)
         with ThreadPoolExecutor(max_workers=10) as executor:
             for reservation in reservations:
                 executor.submit(self.reserve_worker, reservation, now)
@@ -367,6 +364,26 @@ class ReserveBot:
             self._worker()
         except Exception:
             self.logger.error(format_exc())
+
+
+    def run(self, non_blocking=True):
+        # run worker every day at 11:00:00 UTC; only once a day
+        def _func():
+            while True:
+                if datetime.now(tz=self.zone) >= self.next_run:
+                    self.logger.info("reserver bot worker is running...", True)
+                    self.worker()
+                    self.next_run = datetime.now(tz=self.zone).replace(hour=11, minute=0, second=0, microsecond=0) + timedelta(days=1)
+                    self.logger.info(f"Next run at {self.next_run}", True)
+
+                sleep(0.1)
+        
+        if non_blocking:
+            from threading import Thread
+            Thread(target=_func, daemon=True).start()
+        else:
+            _func()
+
 
 
 if __name__ == "__main__":

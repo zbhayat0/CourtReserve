@@ -10,8 +10,6 @@ from src.database import Reservation, db
 from src.logger import Logger
 from src.tele_handler import errorsWrapper
 import typing
-from threading import Thread
-from apscheduler.schedulers.background import BackgroundScheduler
 
 
 
@@ -225,17 +223,14 @@ def logs(message):
 @bot.message_handler(commands=["next"])
 @errorsWrapper(logger)
 def next_run(message):
-    bot.send_message(message.chat.id, f"Next run is on {scheduler.get_job('res_bot.worker').next_run_time} UTC")
+    bot.send_message(message.chat.id, f"Next run is on {res_bot.next_run} UTC")
 
 
 if __name__ == "__main__":
     logger.info("Starting the bot")
-    scheduler = BackgroundScheduler(timezone=TIME_ZONE)
     res_bot = ReserveBot()
     res_bot.bot = bot
+    res_bot.run()
 
-    # run res_bot.worker everyday on 11 UTC
-    scheduler.add_job(res_bot.worker, "cron", hour=10, minute=59, second=58, id="res_bot.worker")
-    scheduler.start()
     bot.infinity_polling(timeout=10, long_polling_timeout=5)
 
