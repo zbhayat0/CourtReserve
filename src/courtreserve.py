@@ -146,8 +146,8 @@ class ReserveBot:
 
 
     def setup(self, creds: dict):
-        self.session.cookies.clear()
-        self.session.headers.clear()
+        # reinitialize the session
+        self.session = Session()
 
         headers = {
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -329,25 +329,19 @@ class ReserveBot:
             self.logger.info(f"Skipping reservation {reservation.date} because it's not two days in advance", True)
             return
 
-        is_reserved = False
-
         for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[int(reservation.court_id)], reservation.date):
-            if is_reserved:
-                break
             try:
                 resrv = self.reserve(date=court_date, court=court, acc=reservation.acc)
                 if resrv and resrv["isValid"]:
                     self.bot.send_message(6874076639, f"✅ [{reservation.acc}] Succesfully reserved {reservation.date} at {court.court_label}")
                     self.bot.send_message(942683545, f"✅ [{reservation.acc}] Succesfully reserved {reservation.date} at {court.court_label}") # notify the dev/ delete after testing
                     db.delete(reservation)
-                    is_reserved = True
                     break
                 else:
                     self.bot.send_message(942683545, f"[{reservation.acc}] Error while reserving {reservation.date} at {court.court_label}:\n{resrv.get('message', '')}")
             except Exception:
                 self.logger.error(format_exc())
-        
-        if not is_reserved:
+        else: # if no reservation was made
             self.logger.error(f"[{reservation.acc}] Failed to reserve {reservation.date}")
 
     def _worker(self):
@@ -377,4 +371,5 @@ class ReserveBot:
 
 if __name__ == "__main__":
     bot = ReserveBot()
+    bot.bot = TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk")
     bot.worker()
