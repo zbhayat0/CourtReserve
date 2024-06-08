@@ -1,4 +1,5 @@
 import logging.handlers
+from threading import Thread
 import os
 from telebot import TeleBot
 
@@ -31,7 +32,8 @@ class Logger:
             getattr(self.logger, level)(message)
 
         if notification:
-            TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk").send_message(942683545, message, parse_mode="HTML")
+            bot = TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk")
+            Thread(target=bot.send_message, args=(942683545, message,), kwargs={"parse_mode": "HTML"}).start()
 
     def info(self, message, notification=False, **kwargs):
         self._log(message, "info", notification,**kwargs)
