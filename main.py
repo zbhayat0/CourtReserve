@@ -4,8 +4,8 @@ from pytz import timezone
 from telebot import TeleBot
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from src.courtreserve import (TIME_ZONE, ReserveBot, get_available_days, Location, LOCATION_ID_TO_LOCATION_MAPPING,
-                              get_available_hours)
+from src.worker import Worker
+from src.config import LOCATION_ID_TO_LOCATION_MAPPING, Location, get_available_days, get_available_hours, TIME_ZONE
 from src.database import Reservation, db
 from src.logger import Logger
 from src.tele_handler import errorsWrapper
@@ -223,14 +223,13 @@ def logs(message):
 @bot.message_handler(commands=["next"])
 @errorsWrapper(logger)
 def next_run(message):
-    bot.send_message(message.chat.id, f"Next run is on {res_bot.next_run} UTC")
+    bot.send_message(message.chat.id, f"Next run is on {worker.next_run} UTC")
 
 
 if __name__ == "__main__":
-    logger.info("Starting the bot")
-    res_bot = ReserveBot()
-    res_bot.bot = bot
-    res_bot.run()
-
+    logger.info("Starting the bot") 
+    worker = Worker(bot, logger)
+    worker.run()
+    
     bot.infinity_polling(timeout=10, long_polling_timeout=5)
 

@@ -1,6 +1,4 @@
-import json
 from datetime import datetime, time, timedelta
-from enum import Enum
 from time import sleep
 from traceback import format_exc
 from urllib.parse import unquote
@@ -12,122 +10,35 @@ from telebot import TeleBot
 
 from .database import Reservation, db
 from .logger import Logger
-
 from concurrent.futures import ThreadPoolExecutor
 
-# UTC Timezone
-TIME_ZONE = "UTC"
-ORG_ID = 12207
-OPEN, CLOSE = (7, 21) # (7 AM, 9 PM)
-COURT_BOOKINGS_API_URL = 'https://memberschedulers.courtreserve.com/SchedulerApi/ReadExpandedApi'
-COURT_RESERVATIONS_LANDING_PAGE_URL = 'https://app.courtreserve.com/Online/Reservations/Bookings'
+from .config import LOCATION_ID_TO_LOCATION_MAPPING, START_HOUR, TIME_ZONE, Location
+from .config import zafar_details, michael_details
+from .config import load_credentials, planB_court
+from .config import ExceededReservationTime
 
-
-class Location(Enum):
-    HARD_TENNIS_1 = "Hard - Tennis Court #1"
-    HARD_TENNIS_2 = "Hard - Tennis Court #2"
-    PICKLEBALL_1A = "Pickleball - Pickleball 1A"
-    PICKLEBALL_1B = "Pickleball - Pickleball 1B"
-    PICKLEBALL_2A = "Pickleball - Pickleball 2A"
-    PICKLEBALL_2B = "Pickleball - Pickleball 2B"
-
-    @property
-    def id(self) -> int:
-        return LOCATION_NAME_TO_ID_MAPPING[self.value]
-
-    @property
-    def court_type(self) -> str:
-        return self.value.split(" - ")[1].split(" ")[0] # Pickleball/Tennis
-
-    @property
-    def court_label(self) -> str:
-        return self.value.split(" - ")[1]
-    
-
-LOCATION_NAME_TO_ID_MAPPING = {
-    Location.HARD_TENNIS_1.value: 46164,
-    Location.HARD_TENNIS_2.value: 46165,
-    Location.PICKLEBALL_1A.value: 46166,
-    Location.PICKLEBALL_1B.value: 46167,
-    Location.PICKLEBALL_2A.value: 46168,
-    Location.PICKLEBALL_2B.value: 46169
-}
-
-LOCATION_ID_TO_LOCATION_MAPPING = {v: Location(k) for k, v in LOCATION_NAME_TO_ID_MAPPING.items()}
-
-
-zafar_details = {
-    'member_id': '5663355',
-    'org_member_id': '4442712',
-    'first_name': 'Zafar',
-    'last_name': 'Bhayat',
-    'email': 'zbhayat0@gmail.com',
-    'membership_number': '1138'
-
-}
-
-michael_details = {
-    'member_id': '5663625',
-    'org_member_id': '4443056',
-    'first_name': 'Michael',
-    'last_name': 'Buffolino',
-    'email': 'michaelbuffolino1@gmail.com',
-    'membership_number': '1159'
-}
-
-
-def get_available_hours():
-    return [(time(hour, 0), time(hour+1, 0)) for hour in range(OPEN, CLOSE + 1)]
-
-def get_available_days() -> list[datetime]:
-    # days to reserve in advance
-    # only two days in advance
-    # new day starts from 11AM UTC
-
-    days = []
-    today = datetime.now(timezone(TIME_ZONE))
-    if today.hour < 11:
-        days.append(today + timedelta(days=2))
-    days.append(today + timedelta(days=3))
-    days.append(today + timedelta(days=4))
-
-    return days
-
-def planB_court(court: Location, date: datetime) -> list[tuple[datetime, Location]]:
-    # return two lists
-    # current court + another alternative court of the same type (PICKLEBALL_1A, PICKLEBALL_1B) or (PICKLEBALL_2A, PICKLEBALL_2B) or (HARD_TENNIS_1, HARD_TENNIS_2)
-    # current date + current date + 1 hour
-
-    dates = [date, date + timedelta(hours=1)]
-    courts = [court]
-    court_type = court.court_type
-    
-    while len(courts) < 2:
-        for _court in Location:
-            if _court.court_type == court_type and _court != court:
-                courts.append(_court)
-                break
-    
-    return list(zip(dates, courts))
-
-def load_credentials(acc):
-    with open(f"creds/{acc}.json") as f:
-        return json.load(f)
-
-
-class ExceededReservationTime(Exception):
-    pass
 
 class ReserveBot:
-    def __init__(self):
+    def __init__(self, reservation: Reservation, logger: Logger, bot: TeleBot):
         self.session  = Session()
-        self.logger   = Logger('api_courtreserve')
+        self.reservation = reservation
+
+        self.acc = reservation.acc
+        if reservation.acc == "zafar":
+            self.member_details = zafar_details
+        elif reservation.acc == "mike":
+            self.member_details = michael_details
+        self.creds = load_credentials(reservation.acc)
+
+
         self.zone = timezone(TIME_ZONE)
-        self.bot: TeleBot
-        if (now:=datetime.now(tz=self.zone)).hour < 11:
-            self.next_run = now.replace(hour=11, minute=0, second=0, microsecond=0)
-        else:
-            self.next_run = now.replace(hour=11, minute=0, second=0, microsecond=0) + timedelta(days=1)
+        self.logger = logger
+        self.bot = bot
+
+        self.is_reserved = False
+
+        self.setup()
+
 
     def _get(self, url, *args, **kwargs):
         res = None
@@ -147,11 +58,7 @@ class ReserveBot:
         except Exception:
             self.logger.error(format_exc())
 
-
-    def setup(self, creds: dict):
-        # reinitialize the session
-        self.session = Session()
-
+    def setup(self):
         headers = {
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
             'accept-language': 'en-US,en;q=0.9,ar;q=0.8',
@@ -170,12 +77,11 @@ class ReserveBot:
         }
 
         self.session.headers.update(headers)
-        self.session.cookies.update(creds)
+        self.session.cookies.update(self.creds)
 
         res = self._get('https://app.courtreserve.com/Online/Reservations/Index/12207', headers=headers)
 
         return unquote(res.text.split("OrganizationMemberFavoriteApi")[1].split("requestData=")[1].split("&")[0]).strip()
-
 
     def create_reservation_url(self, start: str, end: str, court_label: str):
         params = (
@@ -189,7 +95,6 @@ class ReserveBot:
         res = self._get('https://app.courtreserve.com/Online/Reservations/CreateReservationCourtsView/12207', params=params)
         return unquote(res.text.split("ixUrl('")[1].split("')")[0]).replace("&amp;", "&")
 
-
     def create_reservation(self, url):
         res = self._get(url)
         soup = BeautifulSoup(res.text, "html.parser")
@@ -202,8 +107,7 @@ class ReserveBot:
             "RequestData": soup.find("input", {"name": "RequestData"}).get("value"),
         }
 
-
-    def reserve_court(self, member: dict, keys: dict, date: str, court_type: str, start_time: str, is_today: bool, court_id: str):
+    def reserve_court(self, member: dict, keys: dict, date: str, court_type: str, start_time: str, is_today: bool, court_id: str, delay: int):
         # date = '5/24/2024 12:00:00 AM'
         # court_type = 'Pickleball - Pickleball 2A'
         # start_time = '12:00:00'
@@ -213,68 +117,83 @@ class ReserveBot:
         )
 
         data = [
-        ('__RequestVerificationToken', keys["__RequestVerificationToken"]),
-        ('Id', '12207'),
-        ('OrgId', '12207'),
-        ('MemberId', member["member_id"]),
-        ('IsConsolidatedScheduler', 'False'),
-        ('HoldTimeForReservation', '15'),
-        ('RequirePaymentWhenBookingCourtsOnline', 'False'),
-        ('AllowMemberToPickOtherMembersToPlayWith', 'False'),
-        ('ReservableEntityName', 'Court'),
-        ('IsAllowedToPickStartAndEndTime', 'False'),
-        ('CustomSchedulerId', ''),
-        ('CustomSchedulerId', ''),
-        ('IsConsolidated', 'False'),
-        ('IsToday', str(is_today)),
-        ('IsFromDynamicSlots', 'False'),
-        ('InstructorId', ''),
-        ('InstructorName', ''),
-        ('CanSelectCourt', 'False'),
-        ('IsCourtRequired', 'False'),
-        ('CostTypeAllowOpenMatches', 'False'),
-        ('IsMultipleCourtRequired', 'False'),
-        ('ReservationQueueId', ''),
-        ('ReservationQueueSlotId', ''),
-        ('RequestData', keys["RequestData"]),
-        ('Date', date),
-        ('SelectedCourtType', court_type),
-        ('SelectedCourtTypeId', '0'),
-        ('SelectedResourceId', ''),
-        ('DisclosureText', ''),
-        ('DisclosureName', ''),
-        ('IsResourceReservation', 'False'),
-        ('StartTime', start_time),
-        ('CourtTypeEnum', '9'),
-        ('MembershipId', '115054'),
-        ('UseMinTimeByDefault', 'False'),
-        ('IsEligibleForPreauthorization', 'False'),
-        ('MatchMakerSelectedRatingIdsString', ''),
-        ('DurationType', ''),
-        ('MaxAllowedCourtsPerReservation', '1'),
-        ('SelectedResourceName', ''),
-        ('ReservationTypeId', '60221'),
-        ('Duration', '60'),
-        ('CourtId', court_id), # the court type id ig
-        ('OwnersDropdown_input', ''),
-        ('OwnersDropdown', ''),
-        ('SelectedMembers[0].OrgMemberId', member["org_member_id"]),
-        ('SelectedMembers[0].MemberId', member["member_id"]),
-        ('SelectedMembers[0].OrgMemberFamilyId', ''),
-        ('SelectedMembers[0].FirstName', member['first_name']),
-        ('SelectedMembers[0].LastName', member['last_name']),
-        ('SelectedMembers[0].Email', member['email']),
-        ('SelectedMembers[0].MembershipNumber', member['membership_number']),
-        ('SelectedMembers[0].PaidAmt', ''),
-        ('SelectedNumberOfGuests', ''),
-        ('X-Requested-With', 'XMLHttpRequest'),
+            ('__RequestVerificationToken', keys["__RequestVerificationToken"]),
+            ('Id', '12207'),
+            ('OrgId', '12207'),
+            ('MemberId', member["member_id"]),
+            ('IsConsolidatedScheduler', 'False'),
+            ('HoldTimeForReservation', '15'),
+            ('RequirePaymentWhenBookingCourtsOnline', 'False'),
+            ('AllowMemberToPickOtherMembersToPlayWith', 'False'),
+            ('ReservableEntityName', 'Court'),
+            ('IsAllowedToPickStartAndEndTime', 'False'),
+            ('CustomSchedulerId', ''),
+            ('CustomSchedulerId', ''),
+            ('IsConsolidated', 'False'),
+            ('IsToday', str(is_today)),
+            ('IsFromDynamicSlots', 'False'),
+            ('InstructorId', ''),
+            ('InstructorName', ''),
+            ('CanSelectCourt', 'False'),
+            ('IsCourtRequired', 'False'),
+            ('CostTypeAllowOpenMatches', 'False'),
+            ('IsMultipleCourtRequired', 'False'),
+            ('ReservationQueueId', ''),
+            ('ReservationQueueSlotId', ''),
+            ('RequestData', keys["RequestData"]),
+            ('Date', date),
+            ('SelectedCourtType', court_type),
+            ('SelectedCourtTypeId', '0'),
+            ('SelectedResourceId', ''),
+            ('DisclosureText', ''),
+            ('DisclosureName', ''),
+            ('IsResourceReservation', 'False'),
+            ('StartTime', start_time),
+            ('CourtTypeEnum', '9'),
+            ('MembershipId', '115054'),
+            ('UseMinTimeByDefault', 'False'),
+            ('IsEligibleForPreauthorization', 'False'),
+            ('MatchMakerSelectedRatingIdsString', ''),
+            ('DurationType', ''),
+            ('MaxAllowedCourtsPerReservation', '1'),
+            ('SelectedResourceName', ''),
+            ('ReservationTypeId', '60221'),
+            ('Duration', '60'),
+            ('CourtId', court_id), # the court type id ig
+            ('OwnersDropdown_input', ''),
+            ('OwnersDropdown', ''),
+            ('SelectedMembers[0].OrgMemberId', member["org_member_id"]),
+            ('SelectedMembers[0].MemberId', member["member_id"]),
+            ('SelectedMembers[0].OrgMemberFamilyId', ''),
+            ('SelectedMembers[0].FirstName', member['first_name']),
+            ('SelectedMembers[0].LastName', member['last_name']),
+            ('SelectedMembers[0].Email', member['email']),
+            ('SelectedMembers[0].MembershipNumber', member['membership_number']),
+            ('SelectedMembers[0].PaidAmt', ''),
+            ('SelectedNumberOfGuests', ''),
+            ('X-Requested-With', 'XMLHttpRequest'),
         ]
 
+        # make sure this function is called 15mins max before the reservation time
+        self.logger.info(f"[WAITING] - {datetime.now(tz=self.zone)} waiting for new reservations for {self.acc} on {date}", True)
+        while True:
+            dtnow = datetime.now(tz=self.zone)
+            if dtnow.hour == START_HOUR:
+                break
+            sleep(0.0005)
+
+        if self.is_reserved:
+            return {"isValid": False, "message": "Already reserved", "terminated_by_bot": True}
+
+        # sleep for the artificial delay to prioritize the first reservation
+        sleep(delay)
+
+        self.logger.info(f"[{datetime.now(tz=self.zone)}] Reserving {date} for {self.acc}", True)
         res = self._post('https://reservations.courtreserve.com//Online/ReservationsApi/CreateReservation/12207', params=params, data=data)
         return res.json() # check for isValid = True
 
 
-    def reserve(self, date: datetime, court: Location, acc: str):
+    def reserve(self, date: datetime, court: Location, delay: int):
         # date = '5/24/2024 12:00:00 AM'
 
         # court_type = 'Pickleball - Pickleball 2A' or 'Hard - Tennis Court #2
@@ -298,95 +217,57 @@ class ReserveBot:
         court_label = court.court_label
         court_type = court.value
         court_id = str(court.id)
-        
-        if acc == "zafar":
-            member = zafar_details
-        elif acc == "mike":
-            member = michael_details
 
-        creds = load_credentials(acc)
-        
-        self.setup(creds=creds)
-        
         url = self.create_reservation_url(start, end, court_label)
         try:
             keys = self.create_reservation(url)
         except ExceededReservationTime:
             return {"isValid": False, "message": "Reservation restricted to 180 minutes"}
 
-        reservation = self.reserve_court(member, keys, _date, court_type, _date.split(" ")[1], is_today, court_id)
-        try:
-            self.logger.info(str(reservation)[:4000], True)
-        except Exception:
-            pass
+        reservation = self.reserve_court(self.member_details, keys, _date, court_type, _date.split(" ")[1], is_today, court_id, delay)
         return reservation
 
-    def reserve_worker(self, reservation: Reservation, now: datetime):
-        self.logger.info(f"Reserving {reservation.date} for {reservation.acc}", True)
-        if reservation.date.date() <= now.date():
-            db.delete(reservation)
-            self.logger.info(f"Deleted reservation {reservation.date}", True)
-            return
 
-        if reservation.date.date() != (now + timedelta(days=2)).date():
-            self.logger.info(f"Skipping reservation {reservation.date} because it's not two days in advance", True)
-            return
-
-        for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[int(reservation.court_id)], reservation.date):
-            try:
-                resrv = self.reserve(date=court_date, court=court, acc=reservation.acc)
-                if resrv and resrv["isValid"]:
-                    self.bot.send_message(6874076639, f"✅ [{reservation.acc}] Succesfully reserved {reservation.date} at {court.court_label}")
-                    self.bot.send_message(942683545, f"✅ [{reservation.acc}] Succesfully reserved {reservation.date} at {court.court_label}") # notify the dev/ delete after testing
-                    db.delete(reservation)
-                    break
-                else:
-                    self.bot.send_message(942683545, f"[{reservation.acc}] Error while reserving {reservation.date} at {court.court_label}:\n{resrv.get('message', '')}")
-            except Exception:
-                self.logger.error(format_exc())
-        else: # if no reservation was made
-            self.logger.error(f"[{reservation.acc}] Failed to reserve {reservation.date}")
-
-
-    def _worker(self):
-        now = datetime.now(tz=self.zone)
-
-        reservations = db.all()
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            for reservation in reservations:
-                executor.submit(self.reserve_worker, reservation, now)
-            
-        self.logger.info("reserver bot worker is done", True)
-        
-
-    def worker(self):
+    def reserve_pool(self, court_date: datetime, court: Location, delay: int):
         try:
-            self._worker()
+            if self.is_reserved: return
+            resrv = self.reserve(date=court_date, court=court, delay=delay)
+            if self.is_reserved: return
+
+            if resrv and resrv["isValid"] and "terminated_by_bot" not in resrv:
+                self.is_reserved = True
+                self.bot.send_message(6874076639, f"✅ [{self.reservation.acc}] Succesfully reserved {self.reservation.date} at {court.court_label}")
+                self.bot.send_message(942683545, f"✅ [{self.reservation.acc}] Succesfully reserved {self.reservation.date} at {court.court_label}") # notify the dev/ delete after testing
+                db.delete(self.reservation)
+            else:
+                if "terminated_by_bot" in resrv: return
+                self.logger.warning(f"[{self.reservation.acc}] Error while reserving {self.reservation.date} at {court.court_label}:\n{resrv.get('message', '')}")
         except Exception:
             self.logger.error(format_exc())
 
 
-    def run(self, non_blocking=True):
-        # run worker every day at 11:00:00 UTC; only once a day
-        def _func():
-            while True:
-                if datetime.now(tz=self.zone) >= self.next_run:
-                    self.logger.info("reserver bot worker is running...", True)
-                    self.worker()
-                    self.next_run = datetime.now(tz=self.zone).replace(hour=11, minute=0, second=0, microsecond=0) + timedelta(days=1)
-                    self.logger.info(f"Next run at {self.next_run}", True)
+    def reserve_worker(self, now: datetime):
+        self.logger.info(f"Reserving {self.reservation.date} for {self.reservation.acc}", True)
+        if self.reservation.date.date() <= now.date():
+            db.delete(self.reservation)
+            self.logger.info(f"Deleted reservation {self.reservation.date}", True)
+            return
 
-                sleep(0.1)
-        
-        if non_blocking:
-            from threading import Thread
-            Thread(target=_func, daemon=True).start()
-        else:
-            _func()
+        if self.reservation.date.date() != (now + timedelta(days=2)).date():
+            self.logger.info(f"Skipping reservation {self.reservation.date} because it's not two days in advance", True)
+            return
+
+        delay_gen = lambda x: (2*x**2 +x+10)/50
+        with ThreadPoolExecutor(max_workers=4, thread_name_prefix="reservation-wise") as executor:
+            delay = 0; x=0
+            for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[int(self.reservation.court_id)], self.reservation.date):
+                executor.submit(self.reserve_pool, court_date, court, delay)
+                delay += delay_gen(x); x+=1
+
+        if self.is_reserved is False:
+            self.logger.error(f"[{self.reservation.acc}] Failed to reserve {self.reservation.date}")
 
 
 
 if __name__ == "__main__":
-    bot = ReserveBot()
-    bot.bot = TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk")
-    bot.worker()
+    bot = ReserveBot("zafar", Logger("we"), TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk"))
