@@ -1,6 +1,6 @@
 import deta
 
-from threading import RLock
+from threading import RLock, Thread
 
 from .logger import Logger
 
@@ -99,7 +99,7 @@ class Database:
         with self.lock:
             return self._add(reservation)
 
-    def delete(self, obj: Reservation):
+    def _delete(self, obj: Reservation):
         self._base()
         if isinstance(obj, Reservation):
             if not obj.key:
@@ -108,6 +108,9 @@ class Database:
         if obj and obj.key:
             with self.lock:
                 self.base.delete(obj.key)
+
+    def delete(self, obj: Reservation):
+        Thread(target=self._delete, args=(obj,), daemon=True).start()
 
     def all(self):
         self._base()
