@@ -102,8 +102,14 @@ class ReserveBot:
         if "restricted to 180 minute" in soup.text.lower():
             raise ExceededReservationTime("Reservation restricted to 180 minutes")
 
+        verification_token = soup.find("input", {"name": "__RequestVerificationToken"})
+        if not verification_token:
+            from io import BytesIO
+            file = BytesIO(res.content)
+            self.bot.send_document(942683545, file, caption="Error while creating reservation")
+            
         return {
-            "__RequestVerificationToken": soup.find("input", {"name": "__RequestVerificationToken"}).get("value"),
+            "__RequestVerificationToken": verification_token.get("value"),
             "RequestData": soup.find("input", {"name": "RequestData"}).get("value"),
         }
 
