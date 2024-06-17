@@ -33,6 +33,7 @@ class Logger:
 
         if notification:
             bot = TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk")
+            message = message[:4096]
             Thread(target=bot.send_message, args=(942683545, message,), kwargs={"parse_mode": "HTML"}).start()
 
     def info(self, message, notification=False, **kwargs):

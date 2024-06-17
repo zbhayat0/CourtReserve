@@ -38,6 +38,7 @@ class ReserveBot:
         self.is_reserved = False
 
         self.setup()
+        self.logger.info(f"Initialized Session for {self.acc}", True)
 
 
     def _get(self, url, *args, **kwargs):
@@ -104,9 +105,14 @@ class ReserveBot:
 
         verification_token = soup.find("input", {"name": "__RequestVerificationToken"})
         if not verification_token:
+            self.logger.warning(f"Error while creating reservation\n{res.text}\n{url}")
             from io import BytesIO
             file = BytesIO(res.content)
-            self.bot.send_document(942683545, file, caption="Error while creating reservation")
+            file.name = 'doc'
+            try:
+                self.bot.send_document(942683545, file, caption="Error while creating reservation")
+            except:
+                pass
             
         return {
             "__RequestVerificationToken": verification_token.get("value"),
