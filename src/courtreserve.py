@@ -8,7 +8,7 @@ from pytz import timezone
 from requests import Session
 from telebot import TeleBot
 
-from .database import Reservation, db
+from .database import Reservation, creds_manager, db
 from .logger import Logger
 from concurrent.futures import ThreadPoolExecutor
 
@@ -28,7 +28,7 @@ class ReserveBot:
             self.member_details = zafar_details
         elif reservation.acc == "mike":
             self.member_details = michael_details
-        self.creds = load_credentials(reservation.acc)
+        self.creds: dict = load_credentials(reservation.acc)
 
 
         self.zone = timezone(TIME_ZONE)
@@ -59,7 +59,7 @@ class ReserveBot:
         except Exception:
             self.logger.error(format_exc())
 
-    def setup(self):
+    def _setup(self):
         headers = {
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
             'accept-language': 'en-US,en;q=0.9,ar;q=0.8',
@@ -78,9 +78,27 @@ class ReserveBot:
         }
 
         self.session.headers.update(headers)
+
+    def get_creds(self, force_login: bool):
+        creds = creds_manager.get(self.acc)
+        if not creds or force_login:
+            data: dict = getattr(creds_manager, self.acc)
+            x = self._post('https://app.courtreserve.com/Account/Login', data=data)
+            application_code = x.history[0].cookies.get_dict()['.AspNet.ApplicationCookie']
+            creds_manager.add(cred:={".AspNet.ApplicationCookie": application_code}, self.acc)
+            return cred
+
+        return creds
+
+    def setup(self, force_login=False):
+        self._setup()
+        login_creds = self.get_creds(force_login)
+        self.creds.update(login_creds)
         self.session.cookies.update(self.creds)
 
-        res = self._get('https://app.courtreserve.com/Online/Reservations/Index/12207', headers=headers)
+        res = self._get('https://app.courtreserve.com/Online/Reservations/Index/12207')
+        if 'login' in res.text and not force_login:
+            return self.setup(force_login=True)
 
         return unquote(res.text.split("OrganizationMemberFavoriteApi")[1].split("requestData=")[1].split("&")[0]).strip()
 
@@ -94,6 +112,7 @@ class ReserveBot:
         )
 
         res = self._get('https://app.courtreserve.com/Online/Reservations/CreateReservationCourtsView/12207', params=params)
+        self.logger.info(res.url, True)
         return unquote(res.text.split("ixUrl('")[1].split("')")[0]).replace("&amp;", "&")
 
     def create_reservation(self, url):
@@ -282,4 +301,14 @@ class ReserveBot:
 
 
 if __name__ == "__main__":
-    bot = ReserveBot("zafar", Logger("we"), TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk"))
+    reservation = Reservation(
+        datetime(2024, 6, 19, 12, tzinfo=timezone("UTC")),
+        46166,
+        acc="mike",
+    )
+    bot = ReserveBot(reservation, Logger("we"), TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk"))
+    bot.reserve(
+        reservation.date,
+        Location.PICKLEBALL_2A,
+        0
+    )

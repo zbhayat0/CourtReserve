@@ -119,4 +119,37 @@ class Database:
         return [Reservation(**res) for res in items]
 
 
+class Cred:
+    zafar = {
+        'ReturnUrl': '',
+        'Origin': '',
+        'PageId': '',
+        'Username': 'zbhayat0@gmail.com',
+        'Password': 'Password123!',
+        'RememberMe': 'false'
+    }
+    mike = {
+        'ReturnUrl': '',
+        'Origin': '',
+        'PageId': '',
+        'Username': 'michaelbuffolino1@gmail.com',
+        'Password': 'Mjb743349$',
+        'RememberMe': 'false'
+    }
+    def __init__(self):
+        self.deta = deta.Deta("c0ohpvveq8j_eRdsBCee8K9nNZ5EeiWw4DTkHXM4QkXp")
+        self.base = self.deta.Base("courtreserve-creds")
+
+    def get(self, acc):
+        data = self.base.get(acc)
+        if data and (time() - data.get('age', 1e15)) < 3*24*60*60:
+            del data['age']
+            return data
+    
+    def add(self, data: dict, acc: str):
+        data['age'] = time()
+        return self.base.put(data, acc)
+
+
 db = Database()
+creds_manager = Cred()

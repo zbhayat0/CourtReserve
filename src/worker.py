@@ -18,9 +18,9 @@ class Worker:
         self.zone = timezone("UTC")
         if (now:=datetime.now(tz=self.zone)).hour < START_HOUR:
             # minus 1 hour because we want to run the worker slightly before the actual time (minutes are 59)
-            self.next_run = now.replace(hour=START_HOUR-1, minute=59, second=30, microsecond=0)
+            self.next_run = now.replace(hour=START_HOUR-1, minute=59, second=45, microsecond=0)
         else:
-            self.next_run = now.replace(hour=START_HOUR-1, minute=59, second=30, microsecond=0) + timedelta(days=1)
+            self.next_run = now.replace(hour=START_HOUR-1, minute=59, second=45, microsecond=0) + timedelta(days=1)
 
 
     def _worker(self):
@@ -53,7 +53,7 @@ class Worker:
                 if datetime.now(tz=self.zone) >= self.next_run:
                     self.logger.info("reserver bot worker is running...", True)
                     self.worker()
-                    self.next_run = datetime.now(tz=self.zone).replace(hour=START_HOUR-1, minute=59, second=30, microsecond=0) + timedelta(days=1)
+                    self.next_run = datetime.now(tz=self.zone).replace(hour=START_HOUR-1, minute=59, second=45, microsecond=0) + timedelta(days=1)
                     self.logger.info(f"Next run at {self.next_run}", True)
 
                 sleep(0.01)
