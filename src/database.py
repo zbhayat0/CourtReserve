@@ -143,7 +143,10 @@ class Cred:
     def get(self, acc):
         data = self.base.get(acc)
         if data and (time() - data.get('age', 1e15)) < 3*24*60*60:
-            del data['age']
+            try:
+                del data['age']
+            except:
+                pass
             return data
     
     def add(self, data: dict, acc: str):
