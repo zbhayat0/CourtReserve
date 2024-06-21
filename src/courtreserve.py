@@ -86,6 +86,10 @@ class ReserveBot:
             x = self._post('https://app.courtreserve.com/Account/Login', data=data)
             application_code = x.history[0].cookies.get_dict()['.AspNet.ApplicationCookie']
             creds_manager.add(cred:={".AspNet.ApplicationCookie": application_code}, self.acc)
+            try:
+                del cred['age']
+            except:
+                pass
             return cred
 
         return creds
@@ -302,13 +306,13 @@ class ReserveBot:
 
 if __name__ == "__main__":
     reservation = Reservation(
-        datetime(2024, 6, 19, 12, tzinfo=timezone("UTC")),
+        datetime(2024, 6, 22, 13, tzinfo=timezone("UTC")),
         46166,
         acc="mike",
     )
     bot = ReserveBot(reservation, Logger("we"), TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk"))
-    bot.reserve(
+    bot.reserve_pool(
         reservation.date,
-        Location.PICKLEBALL_2A,
+        Location.PICKLEBALL_1B,
         0
     )
