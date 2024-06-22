@@ -32,7 +32,9 @@ class Worker:
             for reservation in reservations:
                 bot_instance = active_resbot.get(reservation.acc, None)
                 if bot_instance is None:
-                    bot_instance = active_resbot[reservation.acc] = ReserveBot(reservation, self.logger, self.bot)
+                    resbot = ReserveBot(reservation, self.logger, self.bot)
+                    resbot.additional = 6874076639
+                    bot_instance = active_resbot[reservation.acc] = resbot
                 executor.submit(bot_instance.reserve_worker, now)
             
         self.logger.info("reserver bot worker is done", True)
