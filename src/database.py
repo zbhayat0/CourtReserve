@@ -142,7 +142,7 @@ class Cred:
 
     def get(self, acc):
         data = self.base.get(acc)
-        if data and (time() - data.get('age', 1e15)) < 12*60*60:
+        if data and (time() - data.get('age', 1e15)) < 5*24*60*60:
             try:
                 del data['age']
             except:
