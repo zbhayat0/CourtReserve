@@ -226,6 +226,26 @@ def next_run(message):
     bot.send_message(message.chat.id, f"Next run is on {worker.next_run} UTC")
 
 
+@bot.message_handler(commands=["test"])
+@errorsWrapper(logger)
+def test_reserve(message):
+    from src.courtreserve import ReserveBot
+    from dateparser import parse
+    date = parse(' '.join(message.text.split(" ")[1:])).replace(tzinfo=timezone("UTC"))
+    reservation = Reservation(
+        date,
+        Location.HARD_TENNIS_1.id,
+        acc="zafar",
+    )
+    resbot = ReserveBot(reservation, logger, bot)
+    resbot.START_HOUR = datetime.now(tz=timezone('UTC')).hour
+    resbot.additional = message.chat.id
+    resbot.reserve_pool(
+        reservation.date,
+        Location.HARD_TENNIS_1,
+        0
+    )
+
 if __name__ == "__main__":
     logger.info("Starting the bot") 
     worker = Worker(bot, logger)
