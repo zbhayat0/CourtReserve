@@ -300,7 +300,7 @@ class ReserveBot:
                 delay += delay_gen(x); x+=1
 
         if self.is_reserved is False:
-            self.logger.error(f"[{self.reservation.acc}] Failed to reserve {self.reservation.date}")
+            self.logger.warning(f"[{self.reservation.acc}] Failed to reserve {self.reservation.date}")
 
 
 
