@@ -215,7 +215,7 @@ class ReserveBot:
             dtnow = datetime.now(tz=self.zone)
             if dtnow.hour == START_HOUR:
                 break
-            sleep(0.0005)
+            sleep(0.005)
 
         if self.is_reserved:
             return {"isValid": False, "message": "Already reserved", "terminated_by_bot": True}
