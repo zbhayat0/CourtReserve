@@ -37,6 +37,8 @@ class ReserveBot:
 
         self.is_reserved = False
 
+        self.START_HOUR = START_HOUR
+        self.additional = None
         self.setup()
         self.logger.info(f"Initialized Session for {self.acc}", True)
 
@@ -117,7 +119,7 @@ class ReserveBot:
 
         res = self._get('https://app.courtreserve.com/Online/Reservations/CreateReservationCourtsView/12207', params=params)
         self.logger.info(res.url, True)
-        return unquote(res.text.split("ixUrl('")[1].split("')")[0]).replace("&amp;", "&")
+        return res.text.split("ixUrl('")[1].split("')")[0].replace("&amp;", "&")
 
     def create_reservation(self, url):
         res = self._get(url)
@@ -128,7 +130,7 @@ class ReserveBot:
 
         verification_token = soup.find("input", {"name": "__RequestVerificationToken"})
         if not verification_token:
-            self.logger.warning(f"Error while creating reservation\n{res.text}\n{url}")
+            self.logger.warning(f"Error while creating reservation\n{soup.text}\n{url}", additional=self.additional)
             from io import BytesIO
             file = BytesIO(res.content)
             file.name = 'doc'
@@ -213,7 +215,7 @@ class ReserveBot:
         self.logger.info(f"[WAITING] - {datetime.now(tz=self.zone)} waiting for new reservations for {self.acc} on {date}", True)
         while True:
             dtnow = datetime.now(tz=self.zone)
-            if dtnow.hour == START_HOUR:
+            if dtnow.hour == self.START_HOUR:
                 break
             sleep(0.005)
 
@@ -273,10 +275,13 @@ class ReserveBot:
                 self.is_reserved = True
                 self.bot.send_message(6874076639, f"✅ [{self.reservation.acc}] Succesfully reserved {self.reservation.date} at {court.court_label}")
                 self.bot.send_message(942683545, f"✅ [{self.reservation.acc}] Succesfully reserved {self.reservation.date} at {court.court_label}") # notify the dev/ delete after testing
-                db.delete(self.reservation)
+                try:
+                    db.delete(self.reservation)
+                except:
+                    pass
             else:
                 if "terminated_by_bot" in resrv: return
-                self.logger.warning(f"[{self.reservation.acc}] Error while reserving {self.reservation.date} at {court.court_label}:\n{resrv.get('message', '')}")
+                self.logger.warning(f"[{self.reservation.acc}] Error while reserving {self.reservation.date} at {court.court_label}:\n{resrv.get('message', '')}", additional=self.additional)
         except Exception:
             self.logger.error(format_exc())
 
@@ -306,13 +311,13 @@ class ReserveBot:
 
 if __name__ == "__main__":
     reservation = Reservation(
-        datetime(2024, 6, 22, 13, tzinfo=timezone("UTC")),
-        46166,
-        acc="mike",
+        datetime(2024, 6, 24, 13, tzinfo=timezone("UTC")),
+        Location.HARD_TENNIS_1.id,
+        acc="zafar",
     )
     bot = ReserveBot(reservation, Logger("we"), TeleBot("7021449655:AAGt6LG48rqtV6nCefane06878wJLYynCvk"))
     bot.reserve_pool(
         reservation.date,
-        Location.PICKLEBALL_1B,
+        Location.HARD_TENNIS_1,
         0
     )
