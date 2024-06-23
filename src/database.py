@@ -2,7 +2,7 @@ import deta
 
 from threading import RLock, Thread
 
-from logger import Logger
+from .logger import Logger
 
 from datetime import datetime
 from time import time
