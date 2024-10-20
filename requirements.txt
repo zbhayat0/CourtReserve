@@ -1,8 +1,6 @@
 pytelegrambotapi
-deta
 requests
 rich
 bs4
 pytz
-apscheduler
 dateparser
