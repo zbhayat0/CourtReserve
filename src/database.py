@@ -1,15 +1,27 @@
-import deta
+from contextlib import contextmanager
 
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, JSON
+from sqlalchemy.orm import Session, scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+from src.logger import Logger
+from datetime import datetime
 from threading import RLock, Thread
 
-from .logger import Logger
+import os
 
-from datetime import datetime
-from time import time
+Base = declarative_base()
 
+class Reservation(Base):
+    __tablename__ = 'reservations'
 
-class Reservation:
-    def __init__(self, date: datetime, court_id: str, created_at: datetime = None, key: str = None, acc: str = None):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    date = Column(DateTime, nullable=False)
+    court_id = Column(String, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    acc = Column(String, nullable=True)
+
+    def __init__(self, date: datetime, court_id: str, created_at: datetime = None, acc: str = None):
         if isinstance(date, str):
             date = datetime.fromisoformat(date)
 
@@ -21,8 +33,7 @@ class Reservation:
 
         self.date = date
         self.court_id = court_id
-        self.created_at = created_at or datetime.now()
-        self.key = key
+        self.created_at = created_at or datetime.utcnow()
         self.acc = acc
 
     def __repr__(self):
@@ -35,84 +46,42 @@ class Reservation:
             "created_at": self.created_at.isoformat(),
             "acc": self.acc
         }
-    
 
-class Database:
-    def __init__(self):
-        self.deta = deta.Deta("c0ohpvveq8j_eRdsBCee8K9nNZ5EeiWw4DTkHXM4QkXp")
+    @staticmethod
+    def get(id: int) -> "Reservation":
+        with db.session() as session:
+            return session.query(Reservation).filter_by(id=id).first()
 
-        self.logger = Logger('database')
-        self.lock = RLock()
-
-    @property
-    def base(self):
-        return self.deta.Base("courtreserve-key")
-
-
-    def _fetch(self, date: datetime, court_id: str, acc: str = ''):
-        if isinstance(date, datetime):
-            date = date.isoformat()
-
-        if acc:
-            res = self.base.fetch({"date": date, "court_id": court_id, "acc": acc}).items
-        else:
-            res = self.base.fetch({"date": date, "court_id": court_id}).items
-
-        if res:
-            # assuming there is only one reservation per date; should be secured by the add logic
-            return Reservation(key=res[0]["key"], date=res[0]["date"], court_id=res[0]["court_id"], created_at=res[0]["created_at"])
-
-    def _get(self, key: str):
-        res = self.base.get(key)
-        if res:
-            return Reservation(key=res["key"], date=res["date"], court_id=res["court_id"], created_at=res["created_at"])
-
-    def _add(self, reservation: Reservation):
-        try:
-            # although insert throws an error if the key already exists, we still check if the key exists
-            # to avoid adding the same reservation twice
-
-            res = self._fetch(reservation.date, reservation.court_id)
-            if res:
+    @staticmethod
+    def add(reservation: "Reservation"):
+        with db.session() as session:
+            existing_res = session.query(Reservation).filter(
+                Reservation.date == reservation.date,
+                Reservation.court_id == reservation.court_id
+            ).first()
+            if existing_res:
                 return False
+            session.add(reservation)
+            return True
 
-            return self.base.insert(reservation.to_dict())
-        except Exception as e:
-            self.logger.error(f"Error adding reservation: {e}")
-            return False
+    @staticmethod
+    def all() -> list["Reservation"]:
+        with db.session() as session:
+            return session.query(Reservation).all()
+        
+    @staticmethod
+    def delete(reservation: "Reservation"):
+        with db.session() as session:
+            if reservation.id:
+                session.query(Reservation).filter_by(id=reservation.id).delete()
+            else:
+                session.query(Reservation).filter(
+                    Reservation.date == reservation.date,
+                    Reservation.court_id == reservation.court_id,
+                    Reservation.acc == reservation.acc
+                ).delete()
 
-    def get(self, key: str):
-        with self.lock:
-            return self._get(key)
-
-    def fetch(self, date:datetime, court_id:str, acc: str):
-        with self.lock:
-            return self._fetch(date, court_id, acc)
-    
-    def add(self, reservation: Reservation):
-        # base.insert throws an error if the key already exists
-        with self.lock:
-            return self._add(reservation)
-
-    def _delete(self, obj: Reservation):
-        if isinstance(obj, Reservation):
-            if not obj.key:
-                obj = self.fetch(obj.date, obj.court_id, obj.acc)
-
-        if obj and obj.key:
-            with self.lock:
-                self.base.delete(obj.key)
-
-    def delete(self, obj: Reservation):
-        Thread(target=self._delete, args=(obj,), daemon=True).start()
-
-    def all(self):
-        with self.lock:
-            items = self.base.fetch().items
-        return [Reservation(**res) for res in items]
-
-
-class Cred:
+class CredStates(Base):
     zafar = {
         'ReturnUrl': '',
         'Origin': '',
@@ -129,26 +98,67 @@ class Cred:
         'Password': 'Mjb743349$',
         'RememberMe': 'false'
     }
-    def __init__(self):
-        self.deta = deta.Deta("c0ohpvveq8j_eRdsBCee8K9nNZ5EeiWw4DTkHXM4QkXp")
-    
-    @property
-    def base(self):
-        return self.deta.Base("courtreserve-creds")
 
-    def get(self, acc):
-        data: dict = self.base.get(acc)
-        if data and (time() - data.get('age', 1e15)) < 5*24*60*60:
-            try:
-                del data['age']
-            except:
-                pass
+    __tablename__ = 'cred_states'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    acc = Column(String, nullable=False)
+    data = Column(JSON, nullable=True)
+    age = Column(DateTime, nullable=False, default=datetime.now)
+
+    def __init__(self, acc: str, data: dict, age: datetime = None):
+        self.acc = acc
+        self.data = data
+        self.age = age or datetime.now()
+
+    def __repr__(self):
+        return f"CredStates(acc={self.acc}, age={self.age})"
+    
+    @staticmethod
+    def get(acc):
+        with db.session() as session:
+            data = session.query(CredStates).filter_by(acc=acc).first()
+        if getattr(data, "age", None) and (datetime.now() - data.age).days <= 4:
             return data
     
-    def add(self, data: dict, acc: str):
-        data['age'] = time()
-        return self.base.put(data, acc)
+    @staticmethod
+    def update(acc, data: dict):
+        with db.session() as session:
+            obj = session.query(CredStates).filter_by(acc=acc).first()
+            
+            if obj:
+                obj.data = data
+                obj.age = datetime.now()
+
+
+class Database:
+    def __init__(self, uri="sqlite:///data/database.db"):
+        os.makedirs("data", exist_ok=True)
+        self.engine = create_engine(uri, pool_size=50, max_overflow=15)
+        self.SessionMaker = sessionmaker(bind=self.engine, expire_on_commit=False, autocommit=False, autoflush=False)
+
+        self.logger = Logger('database')
+        self.lock = RLock()
+
+    @contextmanager
+    def session(self):
+        """
+        Creates a context with an open SQLAlchemy session.
+        """
+        try:
+            session: Session = scoped_session(self.SessionMaker)
+            yield session
+            session.commit()
+        except Exception as _e:
+            from traceback import format_exc
+            self.logger.error(f"Database error: {format_exc()}")
+            session.rollback()
+        finally:
+            session.close()
+
+    def create_database(self):
+        Base.metadata.create_all(self.engine)
 
 
 db = Database()
-creds_manager = Cred()
+db.create_database()

@@ -8,7 +8,7 @@ from pytz import timezone
 from requests import Session
 from telebot import TeleBot
 
-from .database import Reservation, creds_manager, db
+from .database import Reservation, CredStates
 from .logger import Logger
 from concurrent.futures import ThreadPoolExecutor
 
@@ -55,6 +55,7 @@ class ReserveBot:
     def _post(self, url, *args, **kwargs):
         res = None
         try:
+            self.logger.info(f"POST {url}", True)
             res = self.session.post(url, *args, **kwargs)
             res.raise_for_status()
             return res
@@ -82,16 +83,13 @@ class ReserveBot:
         self.session.headers.update(headers)
 
     def get_creds(self, force_login: bool):
-        creds = creds_manager.get(self.acc)
+        creds = CredStates.get(self.acc)
         if not creds or force_login:
-            data: dict = getattr(creds_manager, self.acc)
+            data: dict = getattr(CredStates, self.acc)
             x = self._post('https://app.courtreserve.com/Account/Login', data=data)
             application_code = x.history[0].cookies.get_dict()['.AspNet.ApplicationCookie']
-            creds_manager.add(cred:={".AspNet.ApplicationCookie": application_code}, self.acc)
-            try:
-                del cred['age']
-            except:
-                pass
+            CredStates.update(self.acc, cred:={".AspNet.ApplicationCookie": application_code})
+            self.logger.info(f"Logging in {self.acc}", True)
             return cred
 
         return creds
@@ -276,7 +274,7 @@ class ReserveBot:
                 self.bot.send_message(6874076639, f"✅ [{self.reservation.acc}] Succesfully reserved {self.reservation.date} at {court.court_label}")
                 self.bot.send_message(942683545, f"✅ [{self.reservation.acc}] Succesfully reserved {self.reservation.date} at {court.court_label}") # notify the dev/ delete after testing
                 try:
-                    db.delete(self.reservation)
+                    Reservation.delete(self.reservation)
                 except:
                     pass
             else:
@@ -289,7 +287,7 @@ class ReserveBot:
     def reserve_worker(self, now: datetime):
         self.logger.info(f"Reserving {self.reservation.date} for {self.reservation.acc}", True)
         if self.reservation.date.date() <= now.date():
-            db.delete(self.reservation)
+            Reservation.delete(self.reservation)
             self.logger.info(f"Deleted reservation {self.reservation.date}", True)
             return
 

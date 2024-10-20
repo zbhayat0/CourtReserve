@@ -6,7 +6,7 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from src.worker import Worker
 from src.config import LOCATION_ID_TO_LOCATION_MAPPING, Location, get_available_days, get_available_hours, TIME_ZONE
-from src.database import Reservation, db
+from src.database import Reservation
 from src.logger import Logger
 from src.tele_handler import errorsWrapper
 import typing
@@ -76,7 +76,7 @@ class Menu:
         markup = InlineKeyboardMarkup()
         for n, reservation in enumerate(reservations):
             court = LOCATION_ID_TO_LOCATION_MAPPING[int(reservation.court_id)].value.split("-")[1].strip()
-            markup.add(InlineKeyboardButton(f"{n+1}. [{reservation.acc}] {court} On {reservation.date.strftime('%B %d %H:%M')}", callback_data=f"rsrv_{reservation.key}"))
+            markup.add(InlineKeyboardButton(f"{n+1}. [{reservation.acc}] {court} On {reservation.date.strftime('%B %d %H:%M')}", callback_data=f"rsrv_{reservation.id}"))
 
         markup.add(InlineKeyboardButton("🔙 Back", callback_data="back.admin"))
         return markup
@@ -157,7 +157,7 @@ def book_reservation(call):
 
     reservation = Reservation(acc=acc, date=date.replace(hour=start, tzinfo=timezone(TIME_ZONE)), court_id=court)
 
-    if not db.add(reservation):
+    if not Reservation.add(reservation):
         bot.answer_callback_query(call.id, "⚠️ Reservation already exists", show_alert=True)
         return
 
@@ -168,7 +168,7 @@ def book_reservation(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == "view_reservations")
 def view_reservations(call):
-    reservations = db.all()
+    reservations = Reservation.all()
     if not reservations:
         bot.send_message(call.message.chat.id, "No reservations found")
         bot.answer_callback_query(call.id)
@@ -180,23 +180,23 @@ def view_reservations(call):
 @bot.callback_query_handler(func=lambda call: call.data.startswith("rsrv_"))
 def reservation_details(call):
     reservation_id = call.data.split("_")[1]
-    reservation = db.get(reservation_id)
+    reservation = Reservation.get(reservation_id)
     if not reservation:
         bot.answer_callback_query(call.id, "Reservation not found", show_alert=True)
         return
         
-    bot.edit_message_text(f"Reservation on {reservation.date.strftime('%B %d %H:%M')}", call.message.chat.id, call.message.id, reply_markup=Menu.remove_reservation_menu(reservation.key))
+    bot.edit_message_text(f"Reservation on {reservation.date.strftime('%B %d %H:%M')}", call.message.chat.id, call.message.id, reply_markup=Menu.remove_reservation_menu(reservation.id))
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("remove_"))
 def remove_reservation(call):
     reservation_id = call.data.split("_")[1]
-    reservation = db.get(reservation_id)
+    reservation = Reservation.get(reservation_id)
     if not reservation:
         bot.answer_callback_query(call.id, "Reservation not found", show_alert=True)
         return
     
-    db.delete(reservation)
+    Reservation.delete(reservation)
     bot.answer_callback_query(call.id, "⚠️ Reservation removed", show_alert=True)
     bot.send_message(call.message.chat.id, f"Reservation on {reservation.date.strftime('%B %d %H:%M')} has been removed")
     back(call)

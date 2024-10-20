@@ -1,5 +1,6 @@
 logs/
 .sessions/
+data/
 client_secret.json
 
 # Byte-compiled / optimized / DLL files
