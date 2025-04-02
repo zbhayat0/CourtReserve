@@ -295,12 +295,13 @@ class ReserveBot:
             self.logger.info(f"Skipping reservation {self.reservation.date} because it's not two days in advance", True)
             return
 
-        delay_gen = lambda x: (2*x**2 +x+10)/50
-        with ThreadPoolExecutor(max_workers=4, thread_name_prefix="reservation-wise") as executor:
+        delay_gen = lambda x: (2*x**2 +4*x+10)/35
+        with ThreadPoolExecutor(max_workers=7, thread_name_prefix="reservation-wise") as executor:
             delay = 0; x=0
-            for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[int(self.reservation.court_id)], self.reservation.date):
-                executor.submit(self.reserve_pool, court_date, court, delay)
-                delay += delay_gen(x); x+=1
+            for _ in range(7):
+                for court_date, court in planB_court(LOCATION_ID_TO_LOCATION_MAPPING[int(self.reservation.court_id)], self.reservation.date):
+                    executor.submit(self.reserve_pool, court_date, court, delay)
+                    delay += delay_gen(x); x+=1
 
         if self.is_reserved is False:
             self.logger.warning(f"[{self.reservation.acc}] Failed to reserve {self.reservation.date}")

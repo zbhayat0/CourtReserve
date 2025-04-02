@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
-from src.database import db
+from src.database import Reservation
 from src.logger import Logger
 from src.courtreserve import ReserveBot
 from src.config import START_HOUR
@@ -27,8 +27,8 @@ class Worker:
         now = datetime.now(tz=self.zone)
         active_resbot = {}
 
-        reservations = db.all()
-        with ThreadPoolExecutor(max_workers=6, thread_name_prefix="account-wise") as executor:
+        reservations = Reservation.all()
+        with ThreadPoolExecutor(max_workers=10, thread_name_prefix="account-wise") as executor:
             for reservation in reservations:
                 bot_instance = active_resbot.get(reservation.acc, None)
                 if bot_instance is None:
