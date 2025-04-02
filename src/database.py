@@ -95,7 +95,7 @@ class CredStates(Base):
         'Origin': '',
         'PageId': '',
         'Username': 'michaelbuffolino1@gmail.com',
-        'Password': 'Mjb743349$',
+        'Password': 'ColinMikey20',
         'RememberMe': 'false'
     }
 
