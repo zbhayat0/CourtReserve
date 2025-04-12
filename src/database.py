@@ -9,6 +9,7 @@ from datetime import datetime
 from threading import RLock, Thread
 
 import os
+import json
 
 Base = declarative_base()
 
@@ -130,6 +131,19 @@ class CredStates(Base):
                 obj.data = data
                 obj.age = datetime.now()
 
+def load_credentials(acc):
+    # Try to load from environment variable first
+    creds_json = os.getenv('CREDS')
+    if creds_json:
+        try:
+            creds = json.loads(creds_json)
+            return creds.get(acc, {})
+        except:
+            pass
+    
+    # Fallback to file if environment variable is not set
+    with open(f"creds/{acc}.json") as f:
+        return json.load(f)
 
 class Database:
     def __init__(self, uri="sqlite:///data/database.db"):
